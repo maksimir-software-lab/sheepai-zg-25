@@ -1,0 +1,12 @@
+---
+alwaysApply: true
+---
+
+# Project rules
+
+- Use bun as package manager and for commands
+- Type all components with React.FC
+- Components props must, unless exported, always be called 'Props'
+- When installing shadcn components, do NOT override existing ones
+- Never hardcode any text in components, use the translations file instead
+- Always declare a const 't' for the useTranslations hook and dont give other names
