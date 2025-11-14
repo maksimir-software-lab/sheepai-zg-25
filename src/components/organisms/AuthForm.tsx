@@ -11,7 +11,10 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-export function AuthForm({ className, ...props }: React.ComponentProps<"div">) {
+export const AuthForm: React.FC<React.ComponentProps<"div">> = ({
+	className,
+	...props
+}) => {
 	const t = useTranslations("auth");
 
 	return (
@@ -27,4 +30,4 @@ export function AuthForm({ className, ...props }: React.ComponentProps<"div">) {
 			</Card>
 		</div>
 	);
-}
+};

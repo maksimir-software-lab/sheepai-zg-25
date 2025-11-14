@@ -6,10 +6,10 @@ import {
 	SidebarHeader,
 } from "@/components/ui/sidebar";
 
-export function AppSidebar() {
+export const AppSidebar: React.FC = () => {
 	return (
 		<Sidebar>
-			<SidebarHeader />
+			<SidebarHeader></SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup />
 				<SidebarGroup />
@@ -17,4 +17,4 @@ export function AppSidebar() {
 			<SidebarFooter></SidebarFooter>
 		</Sidebar>
 	);
-}
+};

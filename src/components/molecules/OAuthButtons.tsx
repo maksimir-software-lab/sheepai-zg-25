@@ -1,6 +1,6 @@
 "use client";
 
-import { useSignIn } from "@clerk/nextjs";
+import { useSignUp } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { setLastUsedOAuthProvider } from "@/app/actions/cookies";
@@ -54,8 +54,8 @@ function getCookie(name: string): string | null {
 	return null;
 }
 
-export function OAuthButtons() {
-	const { signIn } = useSignIn();
+export const OAuthButtons: React.FC = () => {
+	const { signUp } = useSignUp();
 	const t = useTranslations("auth");
 	const [lastUsedProvider, setLastUsedProvider] = useState<string | null>(null);
 
@@ -67,11 +67,11 @@ export function OAuthButtons() {
 	}, []);
 
 	const handleOAuth = async (provider: "google" | "github") => {
-		if (!signIn) return;
+		if (!signUp) return;
 
 		try {
 			await setLastUsedOAuthProvider(provider);
-			await signIn.authenticateWithRedirect({
+			await signUp.authenticateWithRedirect({
 				strategy: `oauth_${provider}`,
 				redirectUrl: "/sso-callback",
 				redirectUrlComplete: "/",
@@ -113,4 +113,4 @@ export function OAuthButtons() {
 			</Button>
 		</div>
 	);
-}
+};

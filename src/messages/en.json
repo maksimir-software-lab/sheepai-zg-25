@@ -3,11 +3,11 @@
 	"description": "Entry for SheepAI Zagreb 2025 hackathon.",
 	"auth": {
 		"login": {
-			"title": "Login to your account",
-			"description": "Sign in with your preferred provider",
+			"title": "Sign in to SheepAI Zagreb 2025",
+			"description": "Welcome back! Please sign in to continue",
 			"loginWith": "Login with...",
-			"oauthGoogle": "Login with Google",
-			"oauthGitHub": "Login with GitHub"
+			"oauthGoogle": "Continue with Google",
+			"oauthGitHub": "Continue with GitHub"
 		},
 		"signup": {
 			"title": "Create an account",

@@ -10,3 +10,4 @@ alwaysApply: true
 - When installing shadcn components, do NOT override existing ones
 - Never hardcode any text in components, use the translations file instead
 - Always declare a const 't' for the useTranslations hook and dont give other names
+- Prefer arrow functions over function declarations

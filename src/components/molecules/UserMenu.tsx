@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 
-export function UserMenu() {
+export const UserMenu: React.FC = () => {
 	const { user } = useUser();
 	const { signOut } = useClerk();
 	const t = useTranslations("auth");
@@ -129,4 +129,4 @@ export function UserMenu() {
 			</PopoverContent>
 		</Popover>
 	);
-}
+};

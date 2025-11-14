@@ -5,7 +5,9 @@ import { AppSidebar } from "@/components/organisms/AppSidebar";
 import { Header } from "@/components/organisms/Header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
-export function ConditionalLayout({ children }: { children: React.ReactNode }) {
+export const ConditionalLayout: React.FC<{ children: React.ReactNode }> = ({
+	children,
+}) => {
 	const pathname = usePathname();
 	const isLoginPage = pathname === "/login";
 
@@ -20,4 +22,4 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
 			<main>{children}</main>
 		</SidebarProvider>
 	);
-}
+};
