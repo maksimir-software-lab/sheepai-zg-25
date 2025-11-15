@@ -37,10 +37,10 @@ export const UserMenu: React.FC = () => {
 					{userInitials}
 				</button>
 			</PopoverTrigger>
-			<PopoverContent className="w-80 p-0" align="end" sideOffset={8}>
+			<PopoverContent className="w-64 p-0" align="end" sideOffset={8}>
 				<div className="flex flex-col">
-					<div className="flex items-center gap-3 p-4">
-						<div className="size-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-lg font-semibold shrink-0">
+					<div className="flex items-center gap-2.5 p-3">
+						<div className="size-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-base font-semibold shrink-0">
 							{userInitials}
 						</div>
 						<div className="flex-1 min-w-0">
@@ -55,15 +55,15 @@ export const UserMenu: React.FC = () => {
 
 					{user.externalAccounts.length > 0 && (
 						<>
-							<div className="p-4 space-y-3">
+							<div className="p-3 space-y-2">
 								<p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
 									{t("userMenu.connectedAccounts")}
 								</p>
-								<div className="space-y-2">
+								<div className="space-y-1.5">
 									{user.externalAccounts.map((account) => (
 										<div
 											key={account.id}
-											className="flex items-center gap-2 rounded-lg border bg-card px-3 py-2 text-card-foreground"
+											className="flex items-center gap-2 rounded-lg border bg-card px-2.5 py-1.5 text-card-foreground"
 										>
 											<div className="size-4 flex items-center justify-center shrink-0">
 												{account.provider === "google" && (
@@ -114,7 +114,7 @@ export const UserMenu: React.FC = () => {
 						</>
 					)}
 
-					<div className="p-2">
+					<div className="p-1.5">
 						<Button
 							type="button"
 							variant="ghost"

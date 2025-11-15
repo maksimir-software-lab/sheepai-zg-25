@@ -3,34 +3,17 @@
 	"description": "Entry for SheepAI Zagreb 2025 hackathon.",
 	"auth": {
 		"login": {
-			"title": "Sign in to SheepAI Zagreb 2025",
-			"description": "Welcome back! Please sign in to continue",
-			"loginWith": "Login with...",
-			"oauthGoogle": "Continue with Google",
-			"oauthGitHub": "Continue with GitHub"
-		},
-		"signup": {
-			"title": "Create an account",
-			"description": "Sign up with your preferred provider",
-			"signupWith": "Sign up with...",
-			"oauthGoogle": "Sign up with Google",
-			"oauthGitHub": "Sign up with GitHub"
-		},
-		"tabs": {
-			"login": "Login",
-			"signup": "Sign Up"
+			"title": "Sign in to SheepAI",
+			"description": "Welcome! Please sign in to continue.",
+			"google": "Continue with Google",
+			"github": "Continue with GitHub"
 		},
 		"header": {
-			"login": "Login",
-			"signup": "Sign Up"
+			"login": "Log In"
 		},
 		"lastUsed": "Last used",
 		"userMenu": {
-			"title": "User Menu",
-			"accountId": "Account ID",
-			"memberSince": "Member since",
 			"connectedAccounts": "Connected Accounts",
-			"noConnectedAccounts": "No connected accounts",
 			"signOut": "Sign Out"
 		}
 	}

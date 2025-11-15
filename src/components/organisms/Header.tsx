@@ -15,7 +15,7 @@ export const Header: React.FC = () => {
 	};
 
 	return (
-		<header className="w-full h-14 bg-transparent absolute top-0 left-0 right-0 z-10">
+		<header className="w-full h-14 bg-sidebar relative z-10 border-b border-border">
 			<div className="flex items-center justify-between px-4 h-full">
 				<div></div>
 				<div className="flex items-center gap-2 sm:gap-4">
@@ -23,8 +23,9 @@ export const Header: React.FC = () => {
 						<Button
 							type="button"
 							variant="default"
+							size="sm"
 							onClick={handleAuthClick}
-							className="text-sm sm:text-base"
+							className="text-sm px-3 tracking-tight font-medium"
 						>
 							{t("header.login")}
 						</Button>

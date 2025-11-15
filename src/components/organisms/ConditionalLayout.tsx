@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { AppSidebar } from "@/components/organisms/AppSidebar";
 import { Header } from "@/components/organisms/Header";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export const ConditionalLayout: React.FC<{ children: React.ReactNode }> = ({
 	children,
@@ -18,8 +18,10 @@ export const ConditionalLayout: React.FC<{ children: React.ReactNode }> = ({
 	return (
 		<SidebarProvider>
 			<AppSidebar />
-			<Header />
-			<main>{children}</main>
+			<SidebarInset>
+				<Header />
+				<main>{children}</main>
+			</SidebarInset>
 		</SidebarProvider>
 	);
 };

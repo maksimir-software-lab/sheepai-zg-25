@@ -9,25 +9,19 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 
-export const AuthForm: React.FC<React.ComponentProps<"div">> = ({
-	className,
-	...props
-}) => {
+export const AuthForm: React.FC = () => {
 	const t = useTranslations("auth");
 
 	return (
-		<div className={cn("flex flex-col gap-6", className)} {...props}>
-			<Card>
-				<CardHeader>
-					<CardTitle>{t("login.title")}</CardTitle>
-					<CardDescription>{t("login.description")}</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<OAuthButtons />
-				</CardContent>
-			</Card>
-		</div>
+		<Card>
+			<CardHeader className="mb-4">
+				<CardTitle>{t("login.title")}</CardTitle>
+				<CardDescription>{t("login.description")}</CardDescription>
+			</CardHeader>
+			<CardContent>
+				<OAuthButtons />
+			</CardContent>
+		</Card>
 	);
 };

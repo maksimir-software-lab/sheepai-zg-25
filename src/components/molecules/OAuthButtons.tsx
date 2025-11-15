@@ -82,11 +82,12 @@ export const OAuthButtons: React.FC = () => {
 	};
 
 	return (
-		<div className="flex gap-2">
+		<div className="flex flex-col gap-2">
 			<Button
 				type="button"
-				variant="outline"
-				className="relative flex-1"
+				variant="default"
+				size="default"
+				className="relative text-foreground bg-background border border-border hover:bg-accent"
 				onClick={() => handleOAuth("google")}
 			>
 				{lastUsedProvider === "google" && (
@@ -95,12 +96,13 @@ export const OAuthButtons: React.FC = () => {
 					</span>
 				)}
 				<GoogleIcon />
-				Google
+				{t("login.google")}
 			</Button>
 			<Button
 				type="button"
-				variant="outline"
-				className="relative flex-1"
+				variant="default"
+				size="default"
+				className="relative text-foreground bg-background border border-border hover:bg-accent"
 				onClick={() => handleOAuth("github")}
 			>
 				{lastUsedProvider === "github" && (
@@ -109,7 +111,7 @@ export const OAuthButtons: React.FC = () => {
 					</span>
 				)}
 				<GitHubIcon />
-				GitHub
+				{t("login.github")}
 			</Button>
 		</div>
 	);
