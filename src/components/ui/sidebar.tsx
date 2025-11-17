@@ -377,7 +377,7 @@ function SidebarTrigger({
 			data-slot="sidebar-trigger"
 			variant="ghost"
 			size="icon"
-			className={cn("size-7", className)}
+			className={cn("size-10 hover:bg-sidebar-accent!", className)}
 			onClick={(event) => {
 				onClick?.(event);
 				toggleSidebar();
@@ -455,7 +455,7 @@ function SidebarHeader({
 			data-slot="sidebar-header"
 			data-sidebar="header"
 			className={cn(
-				"relative flex flex-col gap-2 p-2",
+				"relative flex flex-col gap-2 p-2 h-14",
 				"group-data-[collapsible=offcanvas]:items-center group-data-[collapsible=offcanvas]:justify-center",
 				className,
 			)}
@@ -474,7 +474,7 @@ function SidebarHeader({
 					<SidebarTrigger />
 				</div>
 			)}
-			{state === "expanded" && <div className="relative z-0">{children}</div>}
+			{state === "expanded" && <div className="relative z-0 h-14 flex items-center">{children}</div>}
 		</div>
 	);
 }

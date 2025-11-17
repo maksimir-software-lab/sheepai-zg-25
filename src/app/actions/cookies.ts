@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 
 const LAST_USED_COOKIE_NAME = "lastUsedOAuthProvider";
-const COOKIE_MAX_AGE = 30 * 24 * 60 * 60;
+const COOKIE_MAX_AGE = 90 * 24 * 60 * 60; // 90 days
 
 export async function setLastUsedOAuthProvider(provider: "google" | "github") {
 	const cookieStore = await cookies();
