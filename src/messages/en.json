@@ -1,6 +1,28 @@
 {
 	"title": "SheepAI",
 	"description": "Entry for SheepAI Zagreb 2025 hackathon.",
+	"home": {},
+	"backend-validation": {
+		"title": "Backend Validation Demo",
+		"description": "Test CRUD operations with server-side validation and database integration",
+		"id": "ID",
+		"name": "Name",
+		"count": "Count",
+		"active": "Active",
+		"actions": "Actions",
+		"deleteConfirm": "Delete Item",
+		"deleteMessage": "Are you sure you want to delete {name}? This action cannot be undone.",
+		"cancel": "Cancel",
+		"delete": "Delete",
+		"loading": "Loading...",
+		"createItem": "Create New Item",
+		"namePlaceholder": "Enter item name",
+		"addButton": "Add Item",
+		"noItems": "No items found",
+		"edit": "Edit",
+		"save": "Save",
+		"cancelEdit": "Cancel"
+	},
 	"auth": {
 		"login": {
 			"title": "Sign in to SheepAI",
