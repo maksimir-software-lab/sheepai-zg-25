@@ -10,12 +10,13 @@ if (!gitBranch) {
 }
 
 try {
-  console.log(`🌿 Checking out Git branch: ${gitBranch}`);
+  console.log(`Checking out Git branch: ${gitBranch}`);
   await $`git checkout -b ${gitBranch}`;
 
-  console.log(`🐘 Creating Neon branch: ${neonBranch}`);
-  const output = await $`neonctl branches create --name ${neonBranch} --output json`.text();
-  const dbUrl = JSON.parse(output).connection_uri;
+  console.log(`Creating Neon branch: ${neonBranch}`);
+  const branchOutput = await $`bun neonctl branches create --name ${neonBranch} --output json`.quiet();
+  const branch = await branchOutput.json();
+  const dbUrl = branch.connection_uris[0].connection_uri;
 
   const envFile = Bun.file(".env");
   let envContent = "";
@@ -26,7 +27,7 @@ try {
     envContent = envContent.trim();
   }
 
-  const newContent = `${envContent}\nDATABASE_URL='${dbUrl}'\n`;
+  const newContent = `${envContent}\nDATABASE_URL="${dbUrl}"\n`;
   await Bun.write(".env", newContent);
 
   console.log(`✅ .env updated with new database URL.`);
