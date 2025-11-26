@@ -48,18 +48,6 @@ export const AppSidebar: React.FC = () => {
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
-							<SidebarMenuItem>
-								<SidebarMenuButton
-									asChild
-									isActive={pathname === "/backend-validation"}
-									tooltip="Backend Validation"
-								>
-									<Link href="/backend-validation">
-										<Database />
-										<span>Backend Validation</span>
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
 						</SidebarMenu>
 					</SidebarGroupContent>
 				</SidebarGroup>
