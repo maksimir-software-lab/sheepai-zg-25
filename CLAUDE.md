@@ -52,6 +52,32 @@ bun db:migrate
 - Always declare a const `t` for the `useTranslations()` hook; don't use other names
 - Prefer arrow functions over function declarations
 
+# Strategic approach
+
+NEVER assume your assumptions are correct. ALWAYS verify them using cli tools, if possible, such as running linter, formatter, and type checker.
+
+ALWAYS run the lint, format, compiler, and build commands after your changes, if available in the project.
+
+# Coding Rules
+
+The following coding rules must be followed in all implementations:
+- Always use `const` variables. NEVER reassign using `let`.
+- NEVER use `[index]` array access. ALWAYS use `.at(index)`.
+- NEVER add explanatory comments unless specifically instructed.
+- ALWAYS use functional equivalents of loops. NEVER use `.forEach`.
+- NEVER use meaningless one-letter or short variables that don't clearly state the value they hold.
+- ALWAYS add spacing before and after conditions.
+- NEVER use single-line if statements.
+- ALWAYS add spacing before `return`.
+- ALWAYS start constants holding booleans with `is`, `has`, `does`, or similar.
+- Follow functional programming principles.
+- Write numbers using `_` as a separator for readability. For example, `1_000_000` instead of `1000000`.
+- Avoid magic numbers. Always move them to named constants.
+- Ensure variables and constants have the unit in their name if applicable. For example `TIME_IN_MS` vs `TIME`.
+- NEVER define inline functions inside other functions. If they are only used once, put them directly where needed. Otherwise, put them above the function that uses them.
+- NEVER try to preserve code only for avoiding breaking changes.
+- Use consistent formatting for object keys, for example if all keys use `"test key"`, `"key"` should use quotes as well.
+
 ## Code Architecture
 
 ### Directory Structure
