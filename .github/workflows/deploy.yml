@@ -1,0 +1,66 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: Build Docker image
+      run: |
+        touch .env
+        echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
+        echo NEXT_PUBLIC_CLERK_SIGN_UP_URL=${{ secrets.NEXT_PUBLIC_CLERK_SIGN_UP_URL }} >> .env
+        echo NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }} >> .env
+        echo CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }} >> .env
+        echo OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }} >> .env
+        docker build -t sheepai:latest .
+        docker save sheepai:latest | gzip > image.tar.gz
+    
+    - name: Copy image to server
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        source: "image.tar.gz"
+        target: "${{ secrets.DEPLOY_PATH }}/"
+    
+    - name: Deploy on server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        script: |
+          cd ${{ secrets.DEPLOY_PATH }}
+          
+          echo "Loading Docker image..."
+          docker load < image.tar.gz
+          rm image.tar.gz
+          
+          echo "Stopping old container..."
+          docker stop ${{ secrets.CONTAINER_NAME }} || true
+          docker rm ${{ secrets.CONTAINER_NAME }} || true
+          
+          echo "Starting new container..."
+          docker run -d \
+            --name ${{ secrets.CONTAINER_NAME }} \
+            --restart unless-stopped \
+            -p ${{ secrets.CONTAINER_PORT }}:${{ secrets.CONTAINER_PORT }} \
+            sheepai:latest
+          
+          echo "Cleaning up old images..."
+          docker image prune -f
+          
+          echo "Deployment complete!"
+          docker ps | grep ${{ secrets.CONTAINER_NAME }}
