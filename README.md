@@ -15,3 +15,9 @@ Start the development server:
 ```bash
 bun dev
 ```
+
+Make scripts executable
+
+```bash
+chmod +x scripts/neon-setup.sh
+```
