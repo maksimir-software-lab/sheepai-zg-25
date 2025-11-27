@@ -8,7 +8,7 @@
 		"start": "next start",
 		"check": "biome check --write --unsafe",
 		"db:generate": "drizzle-kit generate",
-		"db:migrate": "node --loader ts-node/esm ./src/db/migrate.ts",
+		"db:migrate": "bun ./src/db/migrate.ts",
 		"neon:setup": "bash ./scripts/neon-setup.sh",
 		"checkout": "bun ./scripts/checkout.ts"
 	},
