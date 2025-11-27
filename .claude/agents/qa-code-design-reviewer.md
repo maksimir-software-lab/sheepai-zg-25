@@ -11,7 +11,7 @@ Your Review Scope:
 
 1. **Code Quality Review**:
    - Verify adherence to the project's coding standards from CLAUDE.md (TypeScript strict mode, React.FC component typing, Props interface naming)
-   - Check proper use of the `cn()` utility from `src/lib/utils.ts` for Tailwind class merging
+   - Check proper use of the `cn()` utility from `src/lib/utils.ts` for Tailwind class mergings
    - Ensure all user-facing text uses translations from `src/messages/en.json` via `useTranslations()` hook
    - Validate component organization (UI components in `components/ui/`, molecules in `components/molecules/`, organisms in `components/organisms/`)
    - Confirm proper TypeScript typing and no use of `any` types
