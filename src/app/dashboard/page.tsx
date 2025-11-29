@@ -1,9 +1,17 @@
 import { getExploreArticles, getForYouArticles } from "@/actions/getArticles";
 import { getRandomArticle } from "@/actions/getRandomArticle";
-import { DashboardTabs } from "@/components/organisms/DashboardTabs";
+import { ArticlesList } from "@/components/organisms/ArticlesList";
+import { DashboardTabButtons } from "@/components/organisms/DashboardTabButtons";
 import { HackOfTheDay } from "@/components/organisms/HackOfTheDay";
 
-export default async function Page() {
+interface Props {
+	searchParams: Promise<{ tab?: string }>;
+}
+
+export default async function Page({ searchParams }: Props) {
+	const params = await searchParams;
+	const activeTab = params.tab === "explore" ? "explore" : "forYou";
+
 	const [forYouResult, exploreResult] = await Promise.all([
 		getForYouArticles(),
 		getExploreArticles(),
@@ -43,13 +51,13 @@ export default async function Page() {
 			: null
 		: null;
 
+	const articles = activeTab === "forYou" ? forYouArticles : exploreArticles;
+
 	return (
 		<div className="space-y-12">
 			{hackOfTheDay && <HackOfTheDay article={hackOfTheDay} />}
-			<DashboardTabs
-				forYouArticles={forYouArticles}
-				exploreArticles={exploreArticles}
-			/>
+			<DashboardTabButtons />
+			<ArticlesList articles={articles} />
 		</div>
 	);
 }

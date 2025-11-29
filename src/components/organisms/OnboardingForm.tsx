@@ -214,24 +214,53 @@ export const OnboardingForm: React.FC = () => {
 								<h2 className="text-2xl font-semibold mb-4">
 									Choose your interests
 								</h2>
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-									{categories.map((category) => (
-										<button
-											type="button"
-											key={category.id}
-											className="flex items-center justify-center p-4 rounded-lg border-2 transition-all duration-200 hover:border-gray-300 cursor-pointer text-left"
-											style={{
-												borderColor: selectedCategories.includes(category.id)
-													? "#000"
-													: "#e5e7eb",
-											}}
-											onClick={() => handleCategoryToggle(category.id)}
-										>
-											<span className="text-base font-medium">
-												{category.name}
-											</span>
-										</button>
-									))}
+								<div className="flex flex-wrap gap-3">
+									{categories.map((category) => {
+										const isSelected = selectedCategories.includes(category.id);
+										return (
+											<button
+												type="button"
+												key={category.id}
+												className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer border ${
+													isSelected
+														? "bg-primary text-primary-foreground border-primary"
+														: "bg-background text-foreground border-border hover:border-primary/50"
+												}`}
+												onClick={() => handleCategoryToggle(category.id)}
+											>
+												<span>{category.name}</span>
+												{isSelected ? (
+													<svg
+														className="w-4 h-4"
+														fill="none"
+														viewBox="0 0 24 24"
+														stroke="currentColor"
+														strokeWidth={2.5}
+													>
+														<path
+															strokeLinecap="round"
+															strokeLinejoin="round"
+															d="M6 18L18 6M6 6l12 12"
+														/>
+													</svg>
+												) : (
+													<svg
+														className="w-4 h-4"
+														fill="none"
+														viewBox="0 0 24 24"
+														stroke="currentColor"
+														strokeWidth={2.5}
+													>
+														<path
+															strokeLinecap="round"
+															strokeLinejoin="round"
+															d="M12 4v16m8-8H4"
+														/>
+													</svg>
+												)}
+											</button>
+										);
+									})}
 								</div>
 							</div>
 						)}
