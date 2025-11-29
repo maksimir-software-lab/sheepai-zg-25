@@ -1,168 +1,220 @@
-# TL;DR News Aggregator
+# NewsEgg - TL;DR News Aggregator
 
-The TL;DR News Aggregator is a web application that delivers highly relevant, professionally oriented news articles with concise summaries and key facts. It adapts dynamically to the user's reading behavior using modern AI techniques and a TikTok-style learning model.
+NewsEgg is a web application that delivers relevant, professionally oriented news articles with AI-generated summaries and personalized recommendations. It learns from user behavior to create a personalized "For You" feed using embedding-based similarity matching.
 
-The sole source of news is the RSS feed of [The Hacker News](https://thehackernews.com/).
+The primary news source is the RSS feed of [The Hacker News](https://thehackernews.com/).
 
 ## Problem Statement
 
-- Long articles: Prefer summarized version to decide is it worthwhile  
-- Falsely generated information: Require high-confident, reliable content  
-- Large amount of news: Wants to follow only categories of interest  
-- Manual website checking: Receive scheduled updates  
-- Plain text articles: Wants richer presentation formats  
+- Long articles: Prefer summarized version to decide if worthwhile
+- Information overload: Want to follow only categories of interest
+- Manual website checking: Receive curated updates
+- Plain text articles: Want richer presentation with key facts
 
 ## User Experience
 
-The application requires **no explicit onboarding** or manual preference setup.  
-Instead of asking the user what they want, it learns from what they actually engage with.
+### Onboarding
 
-Upon opening the app, users immediately receive:
+Users go through a lightweight 2-step onboarding:
 
-- A personalized “For You” feed
-- Professionally relevant categories (e.g., Security, AI, New Tools, Research, Industry News)
-- TL;DR summaries, key facts, and “Why this matters”
+1. Describe themselves (e.g., "I'm a backend developer interested in security")
+2. Select interest categories (Technology, Business, Science, Health, etc.)
 
-All personalization happens automatically based on reading behavior:
+These interests are embedded and stored to bootstrap personalization before engagement data exists.
 
-- Opening articles  
-- Expanding summaries  
-- Liking / disliking  
-- Scrolling behavior (quick skip vs. slow read)
+### Dashboard
 
-This creates a **fast-adapting professional news feed** without user configuration.
+The main interface has two tabs:
 
-## Explorative Search
+- **For You**: Personalized feed ranked by similarity to user profile, recency, popularity, and exploration factor
+- **Explore**: Recent articles with tag-based filtering and "Article of the Day" (most engaged article)
 
-To avoid filter bubbles and encourage discovery, users can:
+### Article Experience
 
-- Search across all summarized articles (embedding based search)
-- Browse topic-based sections  
-- View trending/high-impact stories (based on recence, urgency and user engagement)
+- Article cards show title, summary, publish date, and relevance score
+- Like/dislike buttons for explicit feedback
+- Full article view with personalized TL;DR summary based on user interests
+- Link to original source
 
-Exploration signals also improve personalization.
+### Search
 
-## Recommendation Algorithm
-
-1. RSS feed delivers new articles  
-2. LLM generates a TL;DR, key facts, tags
-3. Embeddings are generated for articles using summary + key facts  
-4. A user embedding is continuously updated from engagement behavior  
-5. Similarity, relevance, recency, and popularity are all combined into a dynamic score  
-6. Articles are ranked to produce a personalized, real-time “For You” feed  
-7. An exploration factor ensures new, diverse topics are always shown  
-
-This approach is extendable in the future to additional RSS feeds or custom sources, while remaining fully focused on Hacker News for the hackathon version.
+Semantic search across all articles using embedding similarity.
 
 ## System Architecture
 
-- Frontend
-  - Next.js app router with React and TypeScript
-  - Tailwind CSS + shadcn/ui for a mobile-first UI
-  - Client components collect engagement events (open, expand summary, like, dislike, scroll) and send them to the backend
-- Backend
-  - Next.js server actions and route handlers encapsulate use-cases (fetch feed, record engagement, add interest)
-  - A dedicated services layer in `src/lib/services` provides small, composable AI and similarity building blocks
-  - Domain-specific pipelines in `src/lib` orchestrate services to implement the recommendation algorithm
-- Database
-  - PostgreSQL with `pgvector` via Drizzle ORM
-  - Core tables:
-    - `articles`: title, raw content, summary, embedding, source URL, timestamps
-    - `users`: authenticated users
-    - `user_interests`: manual interests as embeddings
-    - `engagement_events`: fine-grained interaction events
-    - `user_profiles`: continuously updated user embedding and engagement metadata
-- AI Layer
-  - All AI access is routed through a thin services layer
-  - Dependency injection allows easy swapping of models or providers without touching business logic
+### Frontend
+
+- Next.js 16 app router with React and TypeScript
+- Tailwind CSS + shadcn/ui for mobile-first UI
+- next-intl for internationalization
+- Client hooks for engagement tracking, search, and feed management
+
+### Backend
+
+- Next.js server actions for all data operations
+- Dependency-injected services layer in `src/lib/services`
+- Pipelines in `src/lib/pipelines` for multi-step workflows
+
+### Database
+
+PostgreSQL with `pgvector` via Drizzle ORM on Neon.
+
+**Tables:**
+
+- `users`: Clerk-authenticated users (id, email)
+- `articles`: title, summary, key_facts, content, embedding (2000 dimensions), source_url, timestamps
+- `tags`: name, slug for categorization
+- `article_tags`: many-to-many relationship
+- `user_interests`: free-text interests with embeddings
+- `user_tag_interests`: selected category interests
+- `engagement_events`: open, expand_summary, like, dislike, scroll events with metadata
+- `user_profiles`: continuously updated user embedding and engagement count
+- `article_tldrs`: cached personalized/generic TL;DR summaries per article/user
+- `newsletter_articles`: tracks which articles were sent in newsletters
+
+All embedding columns use HNSW cosine indexes for fast similarity queries.
+
+### External Services
+
+- **OpenRouter**: LLM access (text generation, structured output) and embeddings
+- **Supabase Storage**: Audio file storage for podcasts
+- **Clerk**: Authentication
+- **InfoBip**: Email delivery for newsletters
 
 ## AI Services Layer
 
-The AI layer is split into three atomic, composable services:
+### Embedding Service
 
-- Embedding Service
-  - Generates high-dimensional embeddings from text (e.g. article summaries, user interests)
-  - Backed by OpenRouter’s embedding API and `pgvector` in the database
-  - Used wherever the system needs to map text into the shared semantic space
-- LLM Service
-  - Generates TL;DRs, key facts, tags, and other structured outputs
-  - Wraps the OpenRouter provider for the Vercel AI SDK
-  - Exposes two main entrypoints:
-    - `generateText`: free-form text generation
-    - `generateObject`: schema-driven JSON generation using Zod schemas
-- Similarity Service
-  - Uses Drizzle ORM + `pgvector` to run fast cosine similarity queries
-  - Provides focused functions:
-    - `findSimilarArticles`: given an embedding, returns top-k similar articles
-    - `findSimilarInterests`: given an embedding and user, returns similar stored interests
-    - `findSimilarUserProfiles`: given an embedding, returns similar user profiles
-  - Also supports generic similarity queries for future use-cases
+- Generates 2000-dimension embeddings via OpenRouter
+- Used for articles, user interests, and search queries
+- Supports single and batch generation
 
-## AI Pipelines
+### LLM Service
 
-These services are composed into higher-level, domain-specific pipelines that implement the full recommendation loop.
+- Wraps Vercel AI SDK with OpenRouter provider
+- `generateText`: free-form text generation
+- `generateObject`: schema-driven JSON generation using Zod schemas
+
+### Similarity Service
+
+Uses Drizzle + pgvector for cosine similarity queries:
+
+- `findSimilarArticles`: given an embedding, returns top-k similar articles
+- `findSimilarInterests`: given an embedding and user, returns similar stored interests
+- `findSimilarUserProfiles`: given an embedding, returns similar user profiles
+
+## Pipelines & Services
 
 ### Article Ingestion Pipeline
 
-1. RSS feed fetcher pulls new Hacker News articles on a schedule.
-2. The LLM service generates a TL;DR, key facts, tags, and “why this matters” for each article.
-3. The embedding service computes an embedding from the summary + key facts (and optionally the title).
-4. The article, summary, metadata, and embedding are stored in the `articles` table, indexed with an HNSW cosine index.
+1. RSS service fetches feed and scrapes full HTML content from each article
+2. Article summary service generates summary, key facts, and tags via LLM
+3. Embedding service computes embedding from summary + key facts
+4. Tag service finds or creates tags and links them to the article
+5. Article is stored with all metadata and embedding
 
-This creates the semantic corpus that all personalization and search operate on.
+### User Profile Service
 
-### User Interest Pipeline
+Maintains a continuously updated user embedding:
 
-1. Users can explicitly add interests (e.g. “AI security”, “Kubernetes performance”).
-2. The embedding service embeds the interest text into the same vector space as articles.
-3. The embedding is stored in `user_interests` for that user.
-4. The similarity service can immediately surface articles similar to these interests.
+1. Loads recent engagement events with article embeddings
+2. Applies event-type weights (likes > opens, dislikes push away)
+3. Applies temporal decay (recent interactions matter more)
+4. Blends with explicit interest embeddings
+5. Stores single user embedding in `user_profiles`
 
-Explicit interests act as strong, stable anchors for personalization.
+Profile updates are triggered after high-signal events (like/dislike) or after a threshold of low-signal events.
 
-### Engagement → User Profile Pipeline
+### Feed Service
 
-1. Every interaction is logged in `engagement_events` with:
-   - `event_type`: open, expand_summary, like, dislike, scroll
-   - `article_id`, `user_id`, and optional metadata (such as scroll duration)
-2. On a schedule or after a threshold of new events, the system:
-   - Loads the user’s recent events within a sliding time window
-   - Applies event-type weights (likes > opens, dislikes push the profile away)
-   - Applies temporal decay so recent interactions matter more than old ones
-3. The pipeline combines:
-   - Weighted article embeddings from engagement events
-   - Manual interest embeddings from `user_interests`
-4. It computes a single user embedding and writes it to `user_profiles`:
-   - `embedding`: the current representation of the user’s interests
-   - `engagement_count`: number of events considered
-   - `last_updated_at`: used for cache invalidation and staleness checks
+**Personalized Feed:**
 
-This creates a continuously adapting user representation without explicit onboarding.
+1. Load user embedding from `user_profiles`
+2. If no profile exists, fall back to averaging user interest embeddings
+3. If no interests, return recent articles
+4. Query similar articles via cosine similarity
+5. Filter out already-engaged articles
+6. Score each candidate by combining:
+   - Similarity to user embedding
+   - Recency (exponential decay)
+   - Popularity (trending score + like ratio)
+   - Exploration factor (boosts unseen tags + random factor)
+7. Return top-ranked articles
 
-### Recommendation & Ranking Pipeline
+**Recent Feed:** Returns articles ordered by publish date.
 
-1. When a user requests their “For You” feed:
-   - The system loads the user embedding from `user_profiles`
-   - If none exists yet, it falls back to a cold-start strategy (e.g. trending articles)
-2. The similarity service retrieves a candidate set of similar articles using cosine similarity against `articles.embedding`.
-3. Candidates are post-processed:
-   - Filter out articles the user has already read or quickly skipped
-   - Optionally enforce a minimum similarity threshold
-4. Each candidate is scored by combining:
-   - Similarity to the user embedding
-   - Recency (time decay)
-   - Popularity (engagement-driven or click-through based)
-   - Exploration factor (boosts less-seen tags or topics)
-5. The top-ranked articles are returned as the “For You” feed and category feeds.
+**Search:** Embeds query and returns similar articles.
 
-This pipeline closes the loop: as users interact, their profile embedding shifts, which changes which articles are most relevant.
+### Engagement Service
 
-### Explorative Search Pipeline
+Records interaction events:
 
-On top of the same article embeddings, the system supports:
+- `open`: user opened article
+- `expand_summary`: user expanded TL;DR
+- `like`/`dislike`: explicit feedback
+- `scroll`: scroll behavior with duration metadata
 
-- Semantic search over summaries and key facts using the similarity service
-- Topic-based sections backed by tags generated by the LLM service
-- Trending views that combine recency and global engagement metrics
+Triggers profile updates when appropriate.
 
-Signals from search and exploration feed back into `engagement_events`, improving future personalization.
+### Article TL;DR Service
+
+Generates on-demand personalized summaries:
+
+1. Check for cached TL;DR for article + user combination
+2. If user has tag interests, generate personalized summary explaining relevance
+3. Otherwise generate generic summary
+4. Cache result for future requests
+
+### Newsletter Service
+
+Generates and sends personalized email digests:
+
+1. Get personalized feed for user
+2. Filter out already-sent articles
+3. Generate overall TL;DR summarizing the batch
+4. Generate detailed summary for each article
+5. Generate podcast audio from articles
+6. Build HTML email and send via InfoBip
+7. Record sent articles to avoid duplicates
+
+### Podcast Service
+
+Generates audio podcasts from articles:
+
+1. Fetch article data
+2. Generate conversational script via LLM (supports different formats)
+3. Generate speech segments via OpenAI TTS
+4. Concatenate audio buffers
+5. Upload to Supabase storage
+6. Return public URL
+
+### Storage Service
+
+Manages file uploads to Supabase Storage with separate buckets:
+
+- `files`: general files
+- `images`: image assets
+- `audio`: podcast audio files
+
+## Frontend Hooks
+
+- `useArticleFeed`: fetches and manages article feed state
+- `useArticleEngagement`: handles like/dislike with optimistic updates
+- `useArticleViewTracking`: tracks article opens
+- `useArticleScrollTracking`: tracks scroll behavior
+- `useSearch`: semantic search with loading/error states
+- `useUserInterests`: manages user interest CRUD
+
+## Cron Jobs
+
+- `/api/cron/ingest`: Scheduled article ingestion from RSS feed
+
+## Configuration
+
+All services use dependency injection with configurable options:
+
+- Feed weights (similarity, recency, popularity, exploration)
+- Embedding dimensions
+- Event weights for profile updates
+- Temporal decay rates
+- Rate limits and batch sizes
