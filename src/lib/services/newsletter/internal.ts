@@ -213,7 +213,7 @@ export const buildNewsletterHtml = (
 								<tr>
 									<td style="padding: 24px 0; text-align: center;">
 										<p style="margin: 0 0 8px 0; font-size: 13px; color: #8888a0;">This newsletter was personalized based on your interests.</p>
-										<p style="margin: 0; font-size: 13px; color: #8888a0;">Powered by SheepAI</p>
+										<p style="margin: 0; font-size: 13px; color: #8888a0;">Powered by NewsEgg</p>
 									</td>
 								</tr>
 							</table>
