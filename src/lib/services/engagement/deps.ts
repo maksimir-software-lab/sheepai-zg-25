@@ -1,5 +1,5 @@
 import type { db } from "@/db";
-import type { IUserProfileService } from "@/lib/services/user-profile/types";
+import type { IUserProfileService } from "@/lib/services/user-profile/service";
 import type { EngagementConfig } from "./config";
 
 export type EngagementDeps = {

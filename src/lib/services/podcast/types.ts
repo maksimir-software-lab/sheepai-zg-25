@@ -54,7 +54,3 @@ export type GeneratePodcastParams = z.infer<typeof generatePodcastParamsSchema>;
 export type GeneratePodcastResponse = z.infer<
 	typeof generatePodcastResponseSchema
 >;
-
-export type IPodcastService = {
-	generate: (params: GeneratePodcastParams) => Promise<GeneratePodcastResponse>;
-};

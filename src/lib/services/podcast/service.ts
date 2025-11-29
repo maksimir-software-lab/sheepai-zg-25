@@ -9,9 +9,12 @@ import {
 	type GeneratePodcastParams,
 	type GeneratePodcastResponse,
 	generatePodcastParamsSchema,
-	type IPodcastService,
 	type TtsModel,
 } from "./types";
+
+export type IPodcastService = {
+	generate: (params: GeneratePodcastParams) => Promise<GeneratePodcastResponse>;
+};
 
 export const createPodcastService = (deps: PodcastDeps): IPodcastService => {
 	const { openai, storageService, config } = deps;

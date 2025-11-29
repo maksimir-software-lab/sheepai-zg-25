@@ -1,5 +1,5 @@
 import type OpenAI from "openai";
-import type { IStorageService } from "../storage/types";
+import type { IStorageService } from "../storage/service";
 import type { PodcastConfig } from "./config";
 
 export type PodcastDeps = {

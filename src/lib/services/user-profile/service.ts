@@ -1,4 +1,4 @@
-import { and, desc, eq, gt, sql } from "drizzle-orm";
+import { and, desc, eq, gt, isNotNull, sql } from "drizzle-orm";
 import {
 	articles,
 	engagementEvents,
@@ -7,7 +7,16 @@ import {
 } from "@/db/schema";
 import type { EngagementEventType } from "@/lib/services/engagement/types";
 import type { UserProfileDeps } from "./deps";
-import type { IUserProfileService, UserProfile } from "./types";
+import type { UserProfile } from "./types";
+
+export type IUserProfileService = {
+	updateProfile: (userId: string) => Promise<UserProfile | null>;
+	shouldUpdateProfile: (
+		userId: string,
+		eventType: EngagementEventType,
+	) => Promise<boolean>;
+	getProfile: (userId: string) => Promise<UserProfile | null>;
+};
 
 export const createUserProfileService = (
 	deps: UserProfileDeps,
@@ -63,8 +72,8 @@ export const createUserProfileService = (
 		interestEmbedding: number[],
 	): number[] => {
 		const blendedEmbedding = new Array<number>(config.embeddingDimensions);
-		const engagementRatio = config.interestBlendRatio;
-		const interestRatio = 1 - config.interestBlendRatio;
+		const interestRatio = config.interestBlendRatio;
+		const engagementRatio = 1 - interestRatio;
 
 		for (let index = 0; index < config.embeddingDimensions; index++) {
 			blendedEmbedding[index] =
@@ -100,7 +109,7 @@ export const createUserProfileService = (
 	};
 
 	const updateProfile = async (userId: string): Promise<UserProfile | null> => {
-		const engagementsWithEmbeddings = await db
+		const engagementsWithEmbeddingsRaw = await db
 			.select({
 				eventType: engagementEvents.eventType,
 				createdAt: engagementEvents.createdAt,
@@ -108,9 +117,21 @@ export const createUserProfileService = (
 			})
 			.from(engagementEvents)
 			.innerJoin(articles, eq(engagementEvents.articleId, articles.id))
-			.where(eq(engagementEvents.userId, userId))
+			.where(
+				and(eq(engagementEvents.userId, userId), isNotNull(articles.embedding)),
+			)
 			.orderBy(desc(engagementEvents.createdAt))
 			.limit(config.maxEngagements);
+
+		const engagementsWithEmbeddings = engagementsWithEmbeddingsRaw.filter(
+			(
+				engagement,
+			): engagement is {
+				eventType: EngagementEventType;
+				createdAt: Date;
+				embedding: number[];
+			} => engagement.embedding !== null && Array.isArray(engagement.embedding),
+		);
 
 		const engagementEmbedding = computeWeightedEmbedding(
 			engagementsWithEmbeddings,

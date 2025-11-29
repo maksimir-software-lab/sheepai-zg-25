@@ -1,6 +1,10 @@
 import type { EmbeddingDeps } from "./deps";
 import { validateEmbeddingResponse } from "./internal";
-import type { IEmbeddingService } from "./types";
+
+export type IEmbeddingService = {
+	generate: (text: string) => Promise<number[]>;
+	generateBatch: (texts: string[]) => Promise<number[][]>;
+};
 
 export const createEmbeddingService = (
 	deps: EmbeddingDeps,

@@ -2,7 +2,15 @@ import * as cheerio from "cheerio";
 import Parser from "rss-parser";
 import TurndownService from "turndown";
 import type { RssDeps } from "./deps";
-import type { IRssService, RawFeedItem, ScrapedArticle } from "./types";
+import type { RawFeedItem, ScrapedArticle } from "./types";
+
+export type IRssService = {
+	fetchFeed: (feedUrl?: string) => Promise<RawFeedItem[]>;
+	fetchFeedWithContent: (feedUrl?: string) => Promise<ScrapedArticle[]>;
+	scrapeArticleContent: (
+		url: string,
+	) => Promise<{ html: string | null; markdown: string | null }>;
+};
 
 export const createRssService = (deps: RssDeps): IRssService => {
 	const { config } = deps;

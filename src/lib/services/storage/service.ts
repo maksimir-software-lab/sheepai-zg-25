@@ -4,7 +4,6 @@ import type {
 	AddResponse,
 	DeleteResponse,
 	GetResponse,
-	IStorageService,
 	StorageBucket,
 	UpdateResponse,
 } from "./types";
@@ -14,6 +13,12 @@ type BucketOperations = {
 	get: (path: string) => GetResponse;
 	update: (path: string, file: File | Blob) => Promise<UpdateResponse>;
 	delete: (path: string) => Promise<DeleteResponse>;
+};
+
+export type IStorageService = {
+	file: BucketOperations;
+	image: BucketOperations;
+	audio: BucketOperations;
 };
 
 const createBucketOperations = (

@@ -1,11 +1,14 @@
 import { generateObject, generateText } from "ai";
 import type { z } from "zod";
 import type { LlmDeps } from "./deps";
-import type {
-	GenerateObjectParams,
-	GenerateTextParams,
-	ILlmService,
-} from "./types";
+import type { GenerateObjectParams, GenerateTextParams } from "./types";
+
+export type ILlmService = {
+	generateText: (params: GenerateTextParams) => Promise<string>;
+	generateObject: <TSchema extends z.ZodType>(
+		params: GenerateObjectParams<TSchema>,
+	) => Promise<z.infer<TSchema>>;
+};
 
 export const createLlmService = (deps: LlmDeps): ILlmService => {
 	const { openRouterAiSdk, config } = deps;

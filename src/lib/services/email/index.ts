@@ -1,12 +1,12 @@
 export type { EmailConfig } from "./config";
 export { EMAIL_CONFIG } from "./config";
 export type { EmailDeps } from "./deps";
+export type { IEmailService } from "./service";
 export { createEmailService } from "./service";
 export type {
 	Attachment,
 	EmailAttachment,
 	EmailRecipient,
-	IEmailService,
 	InfobipDestination,
 	InfobipMessage,
 	InfobipRequestBody,

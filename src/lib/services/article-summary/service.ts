@@ -1,10 +1,10 @@
 import type { ArticleSummaryDeps } from "./deps";
 import { articleSummaryPrompt } from "./prompts";
-import {
-	type ArticleSummary,
-	articleSummarySchema,
-	type IArticleSummaryService,
-} from "./types";
+import { type ArticleSummary, articleSummarySchema } from "./types";
+
+export type IArticleSummaryService = {
+	generateSummary: (title: string, content: string) => Promise<ArticleSummary>;
+};
 
 export const createArticleSummaryService = (
 	deps: ArticleSummaryDeps,
