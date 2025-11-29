@@ -196,3 +196,29 @@ export const userProfilesRelations = relations(userProfiles, ({ one }) => ({
 		references: [users.id],
 	}),
 }));
+
+export const articleTldrs = pgTable("article_tldrs", {
+	id: uuid("id").primaryKey().defaultRandom(),
+	articleId: uuid("article_id")
+		.notNull()
+		.references(() => articles.id, { onDelete: "cascade" }),
+	userId: varchar("user_id", { length: 255 }).references(() => users.id, {
+		onDelete: "cascade",
+	}),
+	tldr: jsonb("tldr")
+		.$type<{ summary: string; relevance: string | null }>()
+		.notNull(),
+	createdAt: timestamp("created_at").defaultNow().notNull(),
+	updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const articleTldrsRelations = relations(articleTldrs, ({ one }) => ({
+	article: one(articles, {
+		fields: [articleTldrs.articleId],
+		references: [articles.id],
+	}),
+	user: one(users, {
+		fields: [articleTldrs.userId],
+		references: [users.id],
+	}),
+}));
