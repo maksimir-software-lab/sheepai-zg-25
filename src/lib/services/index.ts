@@ -23,6 +23,8 @@ import { STORAGE_CONFIG } from "./storage/config";
 import { createStorageService } from "./storage/service";
 import { USER_INTEREST_CONFIG } from "./user-interest/config";
 import { createUserInterestService } from "./user-interest/service";
+import { USER_PROFILE_CONFIG } from "./user-profile/config";
+import { createUserProfileService } from "./user-profile/service";
 
 export type { EmailConfig } from "./email/config";
 export { EMAIL_CONFIG } from "./email/config";
@@ -115,6 +117,14 @@ export {
 	type IUserInterestService as UserInterestProvider,
 } from "./user-interest/service";
 export type { UserInterest } from "./user-interest/types";
+export type { UserProfileConfig } from "./user-profile/config";
+export { USER_PROFILE_CONFIG } from "./user-profile/config";
+export type { UserProfileDeps } from "./user-profile/deps";
+export { createUserProfileService } from "./user-profile/service";
+export type {
+	IUserProfileService as UserProfileProvider,
+	UserProfile,
+} from "./user-profile/types";
 
 type CreateServicesParams = {
 	openRouterApiKey: string;
@@ -166,9 +176,15 @@ export const createServices = (params: CreateServicesParams) => {
 		config: SIMILARITY_CONFIG,
 	});
 
+	const userProfileService = createUserProfileService({
+		db,
+		config: USER_PROFILE_CONFIG,
+	});
+
 	const engagementService = createEngagementService({
 		db,
 		config: ENGAGEMENT_CONFIG,
+		userProfileService,
 	});
 
 	const storageService = createStorageService({
@@ -200,6 +216,7 @@ export const createServices = (params: CreateServicesParams) => {
 		db,
 		similarityService,
 		embeddingService,
+		userProfileService,
 		config: FEED_CONFIG,
 	});
 
@@ -214,6 +231,7 @@ export const createServices = (params: CreateServicesParams) => {
 		storage: storageService,
 		podcast: podcastService,
 		userInterest: userInterestService,
+		userProfile: userProfileService,
 	};
 };
 

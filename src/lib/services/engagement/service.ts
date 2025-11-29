@@ -32,7 +32,21 @@ export type IEngagementService = {
 export const createEngagementService = (
 	deps: EngagementDeps,
 ): IEngagementService => {
-	const { db } = deps;
+	const { db, userProfileService } = deps;
+
+	const triggerProfileUpdateIfNeeded = async (
+		userId: string,
+		eventType: EngagementEventType,
+	): Promise<void> => {
+		const shouldUpdate = await userProfileService.shouldUpdateProfile(
+			userId,
+			eventType,
+		);
+
+		if (shouldUpdate) {
+			await userProfileService.updateProfile(userId);
+		}
+	};
 
 	const recordEngagement = async (
 		userId: string,
@@ -72,6 +86,8 @@ export const createEngagementService = (
 					metadata,
 				})
 				.returning();
+
+			triggerProfileUpdateIfNeeded(userId, eventType).catch(() => {});
 
 			return engagement;
 		} catch (error) {

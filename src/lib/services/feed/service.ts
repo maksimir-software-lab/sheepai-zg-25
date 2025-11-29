@@ -16,7 +16,13 @@ export type IFeedService = {
 };
 
 export const createFeedService = (deps: FeedDeps): IFeedService => {
-	const { db, similarityService, embeddingService, config } = deps;
+	const {
+		db,
+		similarityService,
+		embeddingService,
+		userProfileService,
+		config,
+	} = deps;
 
 	const computeAverageEmbedding = (embeddings: number[][]): number[] => {
 		if (embeddings.length === 0) {
@@ -39,12 +45,34 @@ export const createFeedService = (deps: FeedDeps): IFeedService => {
 		return result;
 	};
 
+	const isProfileFresh = (lastUpdatedAt: Date): boolean => {
+		const oneHourAgo = Date.now() - 60 * 60 * 1000;
+		return lastUpdatedAt.getTime() > oneHourAgo;
+	};
+
 	const getPersonalizedFeed = async (
 		userId: string,
 		options?: FeedOptions,
 	): Promise<FeedArticle[]> => {
 		const limit = options?.limit ?? config.defaultLimit;
 		const minSimilarity = options?.minSimilarity ?? config.defaultMinSimilarity;
+
+		const userProfile = await userProfileService.getProfile(userId);
+
+		if (userProfile && isProfileFresh(userProfile.lastUpdatedAt)) {
+			const similarArticles = await similarityService.findSimilarArticles(
+				userProfile.embedding,
+				{
+					topK: limit,
+					minSimilarity,
+				},
+			);
+
+			return similarArticles.map((result) => ({
+				article: result.article,
+				similarity: result.similarity,
+			}));
+		}
 
 		const interests = await db
 			.select()
