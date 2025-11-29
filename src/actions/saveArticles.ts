@@ -3,21 +3,27 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { articles } from "@/db/schema";
-import type { ScrapedArticle } from "@/lib/rssScraper";
+import type { ScrapedArticle } from "@/lib/services/rss/types";
 
-export async function saveArticles(scrapedArticles: ScrapedArticle[]) {
+const EMBEDDING_DIMENSIONS = 2000;
+
+export const saveArticles = async (scrapedArticles: ScrapedArticle[]) => {
 	try {
 		const savedArticles = [];
+		const placeholderEmbedding = Array.from(
+			{ length: EMBEDDING_DIMENSIONS },
+			() => 0,
+		);
 
 		for (const article of scrapedArticles) {
-			if (!article.content || !article.mainContentMarkdown) {
+			if (!article.contentMarkdown) {
 				continue;
 			}
 
 			const existingArticle = await db
 				.select()
 				.from(articles)
-				.where(eq(articles.sourceUrl, article.sourceUrl))
+				.where(eq(articles.sourceUrl, article.link))
 				.limit(1);
 
 			if (existingArticle.length > 0) {
@@ -28,11 +34,12 @@ export async function saveArticles(scrapedArticles: ScrapedArticle[]) {
 				.insert(articles)
 				.values({
 					title: article.title,
-					summary: article.summary,
-					content: article.content,
-					embedding: article.embedding,
-					sourceUrl: article.sourceUrl,
-					publishedAt: article.publishedAt,
+					summary: article.description,
+					keyFacts: [],
+					content: article.contentMarkdown,
+					embedding: placeholderEmbedding,
+					sourceUrl: article.link,
+					publishedAt: article.pubDate,
 				})
 				.returning();
 
@@ -52,4 +59,4 @@ export async function saveArticles(scrapedArticles: ScrapedArticle[]) {
 			error: error instanceof Error ? error.message : "Unknown error occurred",
 		};
 	}
-}
+};

@@ -1,75 +1,115 @@
+import * as cheerio from "cheerio";
+import Parser from "rss-parser";
+import TurndownService from "turndown";
 import type { RssDeps } from "./deps";
-import type { IRssService, RawFeedItem } from "./types";
+import type { IRssService, RawFeedItem, ScrapedArticle } from "./types";
 
 export const createRssService = (deps: RssDeps): IRssService => {
 	const { config } = deps;
+	const parser = new Parser();
 
-	const parseXml = (xmlText: string): RawFeedItem[] => {
-		const items: RawFeedItem[] = [];
+	const cleanText = (text: string): string => {
+		return text.replace(/[^\x20-\x7E\n\r\t]/g, "").trim();
+	};
 
-		const itemMatches = xmlText.match(/<item>([\s\S]*?)<\/item>/g);
-		if (!itemMatches) {
-			return items;
-		}
+	const scrapeArticleContent = async (
+		url: string,
+	): Promise<{ html: string | null; markdown: string | null }> => {
+		try {
+			const response = await fetch(url, {
+				headers: {
+					"User-Agent": config.userAgent,
+				},
+			});
 
-		for (const itemXml of itemMatches) {
-			const title = extractTagContent(itemXml, "title");
-			const description = extractTagContent(itemXml, "description");
-			const link = extractTagContent(itemXml, "link");
-			const pubDateStr = extractTagContent(itemXml, "pubDate");
-
-			if (title && link) {
-				items.push({
-					title: decodeHtmlEntities(title),
-					description: decodeHtmlEntities(description ?? ""),
-					link,
-					pubDate: pubDateStr ? new Date(pubDateStr) : null,
-				});
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
 			}
-		}
 
-		return items;
+			const html = await response.text();
+			const $ = cheerio.load(html);
+
+			const articleBody = $(config.contentSelector);
+
+			if (articleBody.length === 0) {
+				return { html: null, markdown: null };
+			}
+
+			articleBody.find("a[href] img[src^='data:image']").each((_, element) => {
+				const img = $(element);
+				const link = img.parent("a");
+
+				if (link.length > 0) {
+					const realUrl = link.attr("href");
+
+					if (realUrl) {
+						img.attr("src", realUrl);
+					}
+				}
+			});
+
+			const mainContentHtml = articleBody.html();
+
+			if (!mainContentHtml) {
+				return { html: null, markdown: null };
+			}
+
+			const turndownService = new TurndownService({
+				headingStyle: "atx",
+				codeBlockStyle: "fenced",
+			});
+
+			const markdown = turndownService.turndown(mainContentHtml);
+
+			return { html: mainContentHtml, markdown };
+		} catch (error) {
+			console.error(`Error scraping ${url}:`, error);
+			return { html: null, markdown: null };
+		}
 	};
 
-	const extractTagContent = (xml: string, tagName: string): string | null => {
-		const cdataMatch = xml.match(
-			new RegExp(`<${tagName}><!\\[CDATA\\[([\\s\\S]*?)\\]\\]></${tagName}>`),
+	const fetchFeed = async (feedUrl?: string): Promise<RawFeedItem[]> => {
+		const targetUrl = feedUrl ?? config.feedUrl;
+		const feed = await parser.parseURL(targetUrl);
+
+		return feed.items.map((item) => ({
+			title: cleanText(item.title ?? ""),
+			description: cleanText(item.contentSnippet ?? item.content ?? ""),
+			link: item.link ?? "",
+			pubDate: item.pubDate ? new Date(item.pubDate) : null,
+			author: item.creator ?? item.author,
+		}));
+	};
+
+	const fetchFeedWithContent = async (
+		feedUrl?: string,
+	): Promise<ScrapedArticle[]> => {
+		const feedItems = await fetchFeed(feedUrl);
+
+		const scrapedArticlesWithNulls = await Promise.all(
+			feedItems.map(async (item) => {
+				const { html, markdown } = await scrapeArticleContent(item.link);
+
+				if (!markdown || !html) {
+					return null;
+				}
+
+				return {
+					...item,
+					contentHtml: html,
+					contentMarkdown: markdown,
+				};
+			}),
 		);
-		if (cdataMatch) {
-			return cdataMatch[1];
-		}
 
-		const simpleMatch = xml.match(
-			new RegExp(`<${tagName}>([\\s\\S]*?)</${tagName}>`),
+		return scrapedArticlesWithNulls.filter(
+			(article): article is ScrapedArticle => article !== null,
 		);
-		return simpleMatch ? simpleMatch[1] : null;
-	};
-
-	const decodeHtmlEntities = (text: string): string => {
-		return text
-			.replace(/&lt;/g, "<")
-			.replace(/&gt;/g, ">")
-			.replace(/&amp;/g, "&")
-			.replace(/&quot;/g, '"')
-			.replace(/&#39;/g, "'")
-			.replace(/&apos;/g, "'")
-			.replace(/<[^>]*>/g, "");
-	};
-
-	const fetchFeed = async (): Promise<RawFeedItem[]> => {
-		const response = await fetch(config.feedUrl);
-
-		if (!response.ok) {
-			throw new Error(
-				`Failed to fetch RSS feed: ${response.status} ${response.statusText}`,
-			);
-		}
-
-		const xmlText = await response.text();
-		return parseXml(xmlText);
 	};
 
 	return {
 		fetchFeed,
+		fetchFeedWithContent,
+		scrapeArticleContent,
 	};
 };

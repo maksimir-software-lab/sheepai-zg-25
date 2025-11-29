@@ -11,4 +11,3 @@ export type PodcastConfig = {
 	defaultSpeed: number;
 	maxTextLength: number;
 };
-

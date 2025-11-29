@@ -8,15 +8,9 @@ import { createArticleIngestionPipeline } from "@/lib/pipelines/article-ingestio
 import type { IngestResult } from "@/lib/pipelines/article-ingestion/types";
 import { services } from "@/lib/services";
 import { createArticleSummaryService } from "@/lib/services/article-summary/service";
-import { RSS_CONFIG } from "@/lib/services/rss/config";
-import { createRssService } from "@/lib/services/rss/service";
 import { createTagService } from "@/lib/services/tag/service";
 
 export const triggerIngestion = async (): Promise<IngestResult> => {
-	const rssService = createRssService({
-		config: RSS_CONFIG,
-	});
-
 	const articleSummaryService = createArticleSummaryService({
 		llmService: services.llm,
 	});
@@ -28,7 +22,7 @@ export const triggerIngestion = async (): Promise<IngestResult> => {
 	const pipeline = createArticleIngestionPipeline({
 		config: ARTICLE_INGESTION_CONFIG,
 		db,
-		rssService,
+		rssService: services.rss,
 		articleSummaryService,
 		embeddingService: services.embedding,
 		tagService,

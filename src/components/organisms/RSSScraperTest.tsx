@@ -6,7 +6,7 @@ import { scrapeRSS } from "@/actions/scrapeRSS";
 import { Button } from "@/components/ui/button";
 
 interface SavedArticle {
-	id: number;
+	id: string;
 	title: string;
 	sourceUrl: string;
 	publishedAt: Date | null;
@@ -57,10 +57,10 @@ export const RSSScraperTest: React.FC = () => {
 	};
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
+		<div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-slate-100">
 			<div className="max-w-5xl mx-auto px-4 py-12">
 				<div className="text-center mb-12">
-					<h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+					<h1 className="text-5xl font-bold mb-4 bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
 						RSS Article Scraper
 					</h1>
 					<p className="text-lg text-gray-600">
@@ -89,7 +89,7 @@ export const RSSScraperTest: React.FC = () => {
 				{error && (
 					<div className="mb-8 bg-red-50 border-l-4 border-red-500 rounded-r-lg p-6 shadow-md">
 						<div className="flex items-start">
-							<div className="flex-shrink-0">
+							<div className="shrink-0">
 								<svg
 									className="h-6 w-6 text-red-500"
 									fill="none"
@@ -129,7 +129,7 @@ export const RSSScraperTest: React.FC = () => {
 									<p className="text-sm font-medium text-gray-500 uppercase tracking-wide">
 										Added to Database
 									</p>
-									<p className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+									<p className="text-4xl font-bold bg-linear-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
 										{savedArticles.length}
 									</p>
 								</div>
@@ -148,7 +148,7 @@ export const RSSScraperTest: React.FC = () => {
 
 				{savedArticles.length > 0 && (
 					<div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
-						<div className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-6">
+						<div className="bg-linear-to-r from-blue-600 to-purple-600 px-8 py-6">
 							<h2 className="text-2xl font-bold text-white">
 								Newly Added Articles
 							</h2>
@@ -165,8 +165,8 @@ export const RSSScraperTest: React.FC = () => {
 									className="px-8 py-6 hover:bg-gray-50 transition-colors duration-150"
 								>
 									<div className="flex items-start gap-4">
-										<div className="flex-shrink-0">
-											<div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">
+										<div className="shrink-0">
+											<div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">
 												{index + 1}
 											</div>
 										</div>

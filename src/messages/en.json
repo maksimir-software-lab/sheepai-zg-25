@@ -86,5 +86,17 @@
 			"cancel": "Cancel",
 			"confirm": "Clear All"
 		}
+	},
+	"sidebar": {
+		"groups": {
+			"main": "Main",
+			"admin": "Admin"
+		},
+		"nav": {
+			"dashboard": "Dashboard",
+			"debug": "Debug",
+			"scraperTest": "Scraper Test",
+			"backendValidation": "Backend Validation"
+		}
 	}
 }

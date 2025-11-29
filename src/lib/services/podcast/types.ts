@@ -56,8 +56,5 @@ export type GeneratePodcastResponse = z.infer<
 >;
 
 export type IPodcastService = {
-	generate: (
-		params: GeneratePodcastParams,
-	) => Promise<GeneratePodcastResponse>;
+	generate: (params: GeneratePodcastParams) => Promise<GeneratePodcastResponse>;
 };
-

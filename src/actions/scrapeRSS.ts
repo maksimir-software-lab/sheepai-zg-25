@@ -1,10 +1,10 @@
 "use server";
 
-import { scrapeRSSFeed } from "@/lib/rssScraper";
+import { services } from "@/lib/services";
 
-export async function scrapeRSS(rssUrl: string) {
+export const scrapeRSS = async (rssUrl?: string) => {
 	try {
-		const articles = await scrapeRSSFeed(rssUrl);
+		const articles = await services.rss.fetchFeedWithContent(rssUrl);
 
 		return {
 			success: true,
@@ -16,4 +16,4 @@ export async function scrapeRSS(rssUrl: string) {
 			error: error instanceof Error ? error.message : "Unknown error occurred",
 		};
 	}
-}
+};

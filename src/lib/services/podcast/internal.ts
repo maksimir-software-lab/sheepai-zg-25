@@ -1,11 +1,7 @@
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { toBlobURL } from "@ffmpeg/util";
 import type OpenAI from "openai";
-import type {
-	AudioFormat,
-	OpenAIVoice,
-	TtsModel,
-} from "./types";
+import type { AudioFormat, OpenAIVoice, TtsModel } from "./types";
 
 export type IndexedAudioBuffer = {
 	index: number;
@@ -83,8 +79,7 @@ export const concatenateAudioBuffers = async (
 	for (const file of [...inputFiles, "concat.txt", outputFile]) {
 		try {
 			await ffmpeg.deleteFile(file);
-		} catch {
-		}
+		} catch {}
 	}
 
 	return outputBuffer;
@@ -95,4 +90,3 @@ export const generateUniqueFilename = (format: AudioFormat): string => {
 	const random = crypto.randomUUID();
 	return `podcast_${timestamp}_${random}.${format}`;
 };
-

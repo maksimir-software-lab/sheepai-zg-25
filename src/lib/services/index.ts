@@ -11,6 +11,8 @@ import { LLM_CONFIG } from "./llm/config";
 import { createLlmService } from "./llm/service";
 import { PODCAST_CONFIG } from "./podcast/config";
 import { createPodcastService } from "./podcast/service";
+import { RSS_CONFIG } from "./rss/config";
+import { createRssService } from "./rss/service";
 import { SIMILARITY_CONFIG } from "./similarity/config";
 import { createSimilarityService } from "./similarity/service";
 import { STORAGE_CONFIG } from "./storage/config";
@@ -35,6 +37,29 @@ export type {
 	GenerateTextParams,
 	ILlmService as LlmProvider,
 } from "./llm/types";
+export type { PodcastConfig } from "./podcast/config";
+export { PODCAST_CONFIG } from "./podcast/config";
+export type { PodcastDeps } from "./podcast/deps";
+export { createPodcastService } from "./podcast/service";
+export type {
+	AudioFormat,
+	GeneratePodcastParams,
+	GeneratePodcastResponse,
+	IPodcastService as PodcastProvider,
+	OpenAIVoice,
+	ScriptSegment,
+	TtsModel,
+	VoiceMapping,
+} from "./podcast/types";
+export type { RssConfig } from "./rss/config";
+export { RSS_CONFIG } from "./rss/config";
+export type { RssDeps } from "./rss/deps";
+export { createRssService } from "./rss/service";
+export type {
+	IRssService as RssProvider,
+	RawFeedItem,
+	ScrapedArticle,
+} from "./rss/types";
 export type { SimilarityConfig } from "./similarity/config";
 export { SIMILARITY_CONFIG } from "./similarity/config";
 export type { SimilarityDeps } from "./similarity/deps";
@@ -51,20 +76,6 @@ export { STORAGE_CONFIG } from "./storage/config";
 export type { StorageDeps } from "./storage/deps";
 export { createStorageService } from "./storage/service";
 export type { IStorageService as StorageProvider } from "./storage/types";
-export type { PodcastConfig } from "./podcast/config";
-export { PODCAST_CONFIG } from "./podcast/config";
-export type { PodcastDeps } from "./podcast/deps";
-export { createPodcastService } from "./podcast/service";
-export type { IPodcastService as PodcastProvider } from "./podcast/types";
-export type {
-	AudioFormat,
-	GeneratePodcastParams,
-	GeneratePodcastResponse,
-	OpenAIVoice,
-	ScriptSegment,
-	TtsModel,
-	VoiceMapping,
-} from "./podcast/types";
 
 type CreateServicesParams = {
 	openRouterApiKey: string;
@@ -107,6 +118,10 @@ export const createServices = (params: CreateServicesParams) => {
 		config: LLM_CONFIG,
 	});
 
+	const rssService = createRssService({
+		config: RSS_CONFIG,
+	});
+
 	const similarityService = createSimilarityService({
 		db,
 		config: SIMILARITY_CONFIG,
@@ -135,6 +150,7 @@ export const createServices = (params: CreateServicesParams) => {
 		email: emailService,
 		embedding: embeddingService,
 		llm: llmService,
+		rss: rssService,
 		similarity: similarityService,
 		storage: storageService,
 		podcast: podcastService,
