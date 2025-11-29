@@ -45,3 +45,13 @@ export const getArticleEngagement = async (articleId: string) => {
 
 	return services.engagement.getArticleEngagement(user.id, articleId);
 };
+
+export const getBatchArticleEngagement = async (articleIds: string[]) => {
+	const user = await currentUser();
+
+	if (!user) {
+		return {};
+	}
+
+	return services.engagement.getBatchArticleEngagement(user.id, articleIds);
+};

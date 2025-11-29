@@ -25,6 +25,7 @@ import { SIMILARITY_CONFIG } from "./similarity/config";
 import { createSimilarityService } from "./similarity/service";
 import { STORAGE_CONFIG } from "./storage/config";
 import { createStorageService } from "./storage/service";
+import { createTagService } from "./tag/service";
 import { USER_INTEREST_CONFIG } from "./user-interest/config";
 import { createUserInterestService } from "./user-interest/service";
 import { USER_PROFILE_CONFIG } from "./user-profile/config";
@@ -142,6 +143,12 @@ export { STORAGE_CONFIG } from "./storage/config";
 export type { StorageDeps } from "./storage/deps";
 export type { IStorageService as StorageProvider } from "./storage/service";
 export { createStorageService } from "./storage/service";
+export type { TagDeps } from "./tag/deps";
+export {
+	createTagService,
+	type ITagService as TagProvider,
+} from "./tag/service";
+export type { Tag, TagWithCount } from "./tag/types";
 export type { UserInterestConfig } from "./user-interest/config";
 export { USER_INTEREST_CONFIG } from "./user-interest/config";
 export type { UserInterestDeps } from "./user-interest/deps";
@@ -259,6 +266,10 @@ export const createServices = (params: CreateServicesParams) => {
 		config: POPULARITY_CONFIG,
 	});
 
+	const tagService = createTagService({
+		db,
+	});
+
 	const feedService = createFeedService({
 		db,
 		similarityService,
@@ -283,6 +294,7 @@ export const createServices = (params: CreateServicesParams) => {
 		userInterest: userInterestService,
 		articleTldr: articleTldrService,
 		userProfile: userProfileService,
+		tag: tagService,
 	};
 };
 

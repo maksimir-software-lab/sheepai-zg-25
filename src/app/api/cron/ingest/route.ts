@@ -68,4 +68,3 @@ export const GET = async (request: Request) => {
 		errors: result.errors,
 	});
 };
-

@@ -2,16 +2,19 @@
 
 import { Compass, Home, Settings } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 export const MobileNavigation: React.FC = () => {
 	const t = useTranslations("navigation.mobile");
 	const pathname = usePathname();
+	const searchParams = useSearchParams();
+	const tabParam = searchParams.get("tab");
 
+	const isExploreActive = pathname === "/dashboard" && tabParam === "explore";
 	const isForYouActive =
-		pathname === "/dashboard" || pathname.startsWith("/article");
-	const isExploreActive = pathname === "/explore";
+		(pathname === "/dashboard" && tabParam !== "explore") ||
+		pathname.startsWith("/article");
 	const isSettingsActive = pathname === "/settings";
 
 	return (

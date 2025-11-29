@@ -63,7 +63,7 @@ export const OnboardingForm: React.FC = () => {
 	const router = useRouter();
 	const [step, setStep] = useState(1);
 	const [selectedPortals, setSelectedPortals] = useState<string[]>([]);
-	const [occupation, setOccupation] = useState("");
+	const [aboutYou, setAboutYou] = useState("");
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -96,7 +96,7 @@ export const OnboardingForm: React.FC = () => {
 	};
 
 	const handleSkip = () => {
-		setOccupation("");
+		setAboutYou("");
 		handleNext();
 	};
 
@@ -116,9 +116,9 @@ export const OnboardingForm: React.FC = () => {
 				}
 			}
 
-			if (occupation.trim()) {
+			if (aboutYou.trim()) {
 				interestsToSave.push(
-					t("interestTemplates.occupationInterest", { occupation }),
+					t("interestTemplates.aboutYouInterest", { aboutYou }),
 				);
 			}
 
@@ -238,15 +238,15 @@ export const OnboardingForm: React.FC = () => {
 								</h2>
 								<div className="space-y-4">
 									<div>
-										<Label htmlFor="occupation" className="text-lg mb-2 block">
-											{t("step2.occupationLabel")}
+										<Label htmlFor="aboutYou" className="text-lg mb-2 block">
+											{t("step2.aboutYouLabel")}
 										</Label>
 										<Input
-											id="occupation"
+											id="aboutYou"
 											type="text"
-											value={occupation}
-											onChange={(event) => setOccupation(event.target.value)}
-											placeholder={t("step2.occupationPlaceholder")}
+											value={aboutYou}
+											onChange={(event) => setAboutYou(event.target.value)}
+											placeholder={t("step2.aboutYouPlaceholder")}
 											className="text-lg p-6"
 										/>
 									</div>

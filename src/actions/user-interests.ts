@@ -32,3 +32,13 @@ export const getUserInterests = async () => {
 
 	return services.userInterest.getInterests(user.id);
 };
+
+export const clearAllUserInterests = async () => {
+	const user = await currentUser();
+
+	if (!user) {
+		throw new Error("Unauthorized");
+	}
+
+	return services.userInterest.clearAllInterests(user.id);
+};

@@ -11,12 +11,28 @@ export { useArticleInteraction } from "./use-article-interaction";
 export { useArticleScrollTracking } from "./use-article-scroll-tracking";
 export { useArticleViewTracking } from "./use-article-view-tracking";
 
-export const useArticleEngagement = (articleId: string) => {
-	const [hasLiked, setHasLiked] = useState(false);
-	const [hasDisliked, setHasDisliked] = useState(false);
-	const [isLoading, setIsLoading] = useState(true);
+interface InitialEngagement {
+	hasLiked: boolean;
+	hasDisliked: boolean;
+}
+
+export const useArticleEngagement = (
+	articleId: string,
+	initialEngagement?: InitialEngagement,
+) => {
+	const [hasLiked, setHasLiked] = useState(
+		initialEngagement?.hasLiked ?? false,
+	);
+	const [hasDisliked, setHasDisliked] = useState(
+		initialEngagement?.hasDisliked ?? false,
+	);
+	const [isLoading, setIsLoading] = useState(!initialEngagement);
 
 	useEffect(() => {
+		if (initialEngagement) {
+			return;
+		}
+
 		const fetchEngagement = async () => {
 			try {
 				const engagement = await getArticleEngagement(articleId);
@@ -31,7 +47,7 @@ export const useArticleEngagement = (articleId: string) => {
 		};
 
 		fetchEngagement();
-	}, [articleId]);
+	}, [articleId, initialEngagement]);
 
 	const like = useCallback(async () => {
 		if (hasLiked) {
