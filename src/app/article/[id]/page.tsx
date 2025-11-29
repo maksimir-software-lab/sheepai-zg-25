@@ -2,8 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getArticle } from "@/actions/getArticle";
-import { getArticleTldr } from "@/actions/getArticleTldr";
 import { ArticleEngagementWrapper } from "@/components/molecules/ArticleEngagementWrapper";
+import { ArticleTldrWrapper } from "@/components/molecules/ArticleTldrWrapper";
 import { Button } from "@/components/ui/button";
 import { sanitizeArticleContent } from "@/lib/utils/sanitizeArticleContent";
 
@@ -23,12 +23,6 @@ export default async function Page({ params }: Props) {
 	}
 
 	const { article } = result;
-
-	const tldrResult = await getArticleTldr(id);
-	const tldrSummary =
-		tldrResult.success && tldrResult.tldr
-			? tldrResult.tldr.summary
-			: article.summary;
 
 	return (
 		<div className="w-full max-w-4xl mx-auto">
@@ -112,9 +106,10 @@ export default async function Page({ params }: Props) {
 							)}
 						</div>
 
-						<p className="text-base lg:text-lg text-muted-foreground leading-relaxed italic border-l-4 border-primary/30 pl-6">
-							{tldrSummary}
-						</p>
+						<ArticleTldrWrapper
+							articleId={article.id}
+							fallbackSummary={article.summary}
+						/>
 					</div>
 
 					<div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-p:text-foreground/90 prose-p:leading-relaxed prose-strong:text-foreground prose-code:text-primary prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-img:rounded-lg prose-img:shadow-lg article-content">
