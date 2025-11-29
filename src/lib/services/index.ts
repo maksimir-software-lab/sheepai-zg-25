@@ -1,6 +1,7 @@
 import { createOpenRouter as createOpenRouterAiSdk } from "@openrouter/ai-sdk-provider";
 import { OpenRouter } from "@openrouter/sdk";
 import { createClient } from "@supabase/supabase-js";
+import OpenAI from "openai";
 import { db } from "@/db";
 import { EMAIL_CONFIG } from "./email/config";
 import { createEmailService } from "./email/service";
@@ -8,6 +9,8 @@ import { EMBEDDING_CONFIG } from "./embedding/config";
 import { createEmbeddingService } from "./embedding/service";
 import { LLM_CONFIG } from "./llm/config";
 import { createLlmService } from "./llm/service";
+import { PODCAST_CONFIG } from "./podcast/config";
+import { createPodcastService } from "./podcast/service";
 import { SIMILARITY_CONFIG } from "./similarity/config";
 import { createSimilarityService } from "./similarity/service";
 import { STORAGE_CONFIG } from "./storage/config";
@@ -48,6 +51,20 @@ export { STORAGE_CONFIG } from "./storage/config";
 export type { StorageDeps } from "./storage/deps";
 export { createStorageService } from "./storage/service";
 export type { IStorageService as StorageProvider } from "./storage/types";
+export type { PodcastConfig } from "./podcast/config";
+export { PODCAST_CONFIG } from "./podcast/config";
+export type { PodcastDeps } from "./podcast/deps";
+export { createPodcastService } from "./podcast/service";
+export type { IPodcastService as PodcastProvider } from "./podcast/types";
+export type {
+	AudioFormat,
+	GeneratePodcastParams,
+	GeneratePodcastResponse,
+	OpenAIVoice,
+	ScriptSegment,
+	TtsModel,
+	VoiceMapping,
+} from "./podcast/types";
 
 type CreateServicesParams = {
 	openRouterApiKey: string;
@@ -55,6 +72,7 @@ type CreateServicesParams = {
 	infobipBaseUrl: string;
 	supabaseUrl: string;
 	supabaseAnonKey: string;
+	openaiApiKey: string;
 };
 
 export const createServices = (params: CreateServicesParams) => {
@@ -64,6 +82,7 @@ export const createServices = (params: CreateServicesParams) => {
 		infobipBaseUrl,
 		supabaseUrl,
 		supabaseAnonKey,
+		openaiApiKey,
 	} = params;
 
 	const openRouter = new OpenRouter({ apiKey: openRouterApiKey });
@@ -102,12 +121,23 @@ export const createServices = (params: CreateServicesParams) => {
 		},
 	});
 
+	const openai = new OpenAI({
+		apiKey: openaiApiKey,
+	});
+
+	const podcastService = createPodcastService({
+		openai,
+		storageService,
+		config: PODCAST_CONFIG,
+	});
+
 	return {
 		email: emailService,
 		embedding: embeddingService,
 		llm: llmService,
 		similarity: similarityService,
 		storage: storageService,
+		podcast: podcastService,
 	};
 };
 
@@ -119,4 +149,5 @@ export const services: Services = createServices({
 	infobipBaseUrl: process.env.INFOBIP_BASE_URL ?? "",
 	supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
 	supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+	openaiApiKey: process.env.OPENAI_API_KEY ?? "",
 });
