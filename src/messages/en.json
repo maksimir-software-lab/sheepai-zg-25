@@ -94,6 +94,7 @@
 		},
 		"nav": {
 			"dashboard": "Dashboard",
+			"settings": "Settings",
 			"debug": "Debug",
 			"scraperTest": "Scraper Test",
 			"backendValidation": "Backend Validation"

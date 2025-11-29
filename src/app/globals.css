@@ -203,3 +203,51 @@ body {
 		font-family: var(--font-inter), sans-serif;
 	}
 }
+
+.article-content p {
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+}
+
+.article-content a {
+	color: #2563eb;
+	font-weight: 700;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	text-decoration: none;
+}
+
+.article-content a:hover {
+	color: #1d4ed8;
+}
+
+.dark .article-content a {
+	color: #60a5fa;
+}
+
+.dark .article-content a:hover {
+	color: #93c5fd;
+}
+
+@media (max-width: 768px) {
+	h1 {
+		font-size: 1.875rem;
+	}
+	h2 {
+		font-size: 1.5rem;
+	}
+	h3 {
+		font-size: 1.25rem;
+	}
+	h4 {
+		font-size: 1.125rem;
+	}
+	h5,
+	h6 {
+		font-size: 1rem;
+	}
+
+	[data-slot="sidebar-mobile-trigger"] {
+		display: none;
+	}
+}

@@ -17,7 +17,7 @@ export const Header: React.FC = () => {
 	};
 
 	return (
-		<header className="w-full h-14 bg-sidebar relative z-10 border-b border-border">
+		<header className="hidden md:block w-full h-14 bg-sidebar relative z-10 border-b border-border">
 			<div className="flex items-center justify-between px-4 h-full">
 				<div></div>
 				<div className="flex items-center gap-2 sm:gap-4">

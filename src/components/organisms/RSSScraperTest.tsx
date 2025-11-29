@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { saveArticles } from "@/actions/saveArticles";
 import { scrapeRSS } from "@/actions/scrapeRSS";
 import { Button } from "@/components/ui/button";
 
@@ -25,27 +24,27 @@ export const RSSScraperTest: React.FC = () => {
 		setTotalScraped(0);
 
 		try {
-			const scrapeResult = await scrapeRSS(
+			const result = await scrapeRSS(
 				"https://feeds.feedburner.com/TheHackersNews",
 			);
 
-			if (!scrapeResult.success || !scrapeResult.data) {
-				setError(scrapeResult.error ?? "Failed to scrape RSS feed");
+			if (!result.success) {
+				setError(result.error ?? "Failed to scrape and save articles");
 				return;
 			}
 
-			setTotalScraped(scrapeResult.data.length);
+			setTotalScraped(result.totalScraped ?? 0);
 
-			const saveResult = await saveArticles(scrapeResult.data);
-
-			if (saveResult.success && saveResult.articles) {
-				const articlesWithData = saveResult.articles.filter(
-					(article): article is NonNullable<typeof article> => article !== null,
+			if (result.articles) {
+				const articlesWithData = result.articles.filter(
+					(article): article is SavedArticle =>
+						article !== null &&
+						article.id !== undefined &&
+						article.title !== undefined &&
+						article.sourceUrl !== undefined,
 				);
 
 				setSavedArticles(articlesWithData);
-			} else {
-				setError(saveResult.error ?? "Failed to save articles");
 			}
 		} catch (err) {
 			setError(

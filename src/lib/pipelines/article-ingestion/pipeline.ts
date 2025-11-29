@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { articles } from "@/db/schema";
-import type { RawFeedItem } from "@/lib/services/rss/types";
+import type { ScrapedArticle } from "@/lib/services/rss/types";
 import type { ArticleIngestionDeps } from "./deps";
 import type { IngestResult, ProcessedArticle } from "./types";
 
@@ -31,7 +31,7 @@ export const createArticleIngestionPipeline = (
 	};
 
 	const processArticle = async (
-		rawItem: RawFeedItem,
+		rawItem: ScrapedArticle,
 	): Promise<ProcessedArticle> => {
 		console.log(
 			`[Article Processing] Generating summary for: "${rawItem.title}"`,
@@ -60,7 +60,7 @@ export const createArticleIngestionPipeline = (
 			title: rawItem.title,
 			summary: summary.summary,
 			keyFacts: summary.keyFacts,
-			content: rawItem.description,
+			content: rawItem.contentHtml,
 			embedding,
 			sourceUrl: rawItem.link,
 			publishedAt: rawItem.pubDate,
@@ -72,7 +72,7 @@ export const createArticleIngestionPipeline = (
 		new Promise((resolve) => setTimeout(resolve, ms));
 
 	const processWithRetry = async (
-		rawItem: RawFeedItem,
+		rawItem: ScrapedArticle,
 	): Promise<ProcessedArticle | null> => {
 		let lastError: Error | null = null;
 
@@ -118,11 +118,11 @@ export const createArticleIngestionPipeline = (
 			errors: [],
 		};
 
-		console.log("[Article Ingestion] Fetching RSS feed...");
-		const feedItems = await rssService.fetchFeed();
+		console.log("[Article Ingestion] Fetching RSS feed with full content...");
+		const feedItems = await rssService.fetchFeedWithContent();
 		result.totalFetched = feedItems.length;
 		console.log(
-			`[Article Ingestion] Fetched ${feedItems.length} items from RSS feed`,
+			`[Article Ingestion] Fetched ${feedItems.length} items with full HTML content`,
 		);
 
 		for (let index = 0; index < feedItems.length; index++) {
