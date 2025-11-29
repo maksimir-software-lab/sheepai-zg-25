@@ -1,11 +1,23 @@
-import { GeistMono } from "geist/font/mono";
-import { GeistSans } from "geist/font/sans";
+import { IBM_Plex_Serif, Inter } from "next/font/google";
 
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { ConditionalLayout } from "@/components/organisms/ConditionalLayout";
+
+const inter = Inter({
+	subsets: ["latin"],
+	variable: "--font-inter",
+	display: "swap",
+});
+
+const ibmPlexSerif = IBM_Plex_Serif({
+	subsets: ["latin"],
+	weight: ["400", "500", "600", "700"],
+	variable: "--font-ibm-plex-serif",
+	display: "swap",
+});
 
 const isAuthDisabled = process.env.NEXT_PUBLIC_AUTH_DISABLED === "true";
 
@@ -26,7 +38,7 @@ export default function RootLayout({
 	const content = (
 		<html lang="en" className="light">
 			<body
-				className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}
+				className={`${inter.variable} ${ibmPlexSerif.variable} antialiased`}
 			>
 				<NextIntlClientProvider>
 					<ConditionalLayout>{children}</ConditionalLayout>

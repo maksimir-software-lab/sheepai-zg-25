@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 const isAuthDisabled = process.env.NEXT_PUBLIC_AUTH_DISABLED === "true";
 
 const isPublicRoute = createRouteMatcher([
-	"/",
 	"/login(.*)",
 	"/sign-in(.*)",
 	"/sign-up(.*)",
@@ -18,9 +17,9 @@ const noopMiddleware = (_request: NextRequest) => {
 
 export default isAuthDisabled
 	? noopMiddleware
-	: clerkMiddleware(async (auth, request) => {
+	: clerkMiddleware((auth, request) => {
 			if (!isPublicRoute(request)) {
-				await auth.protect();
+				auth.protect();
 			}
 		});
 
