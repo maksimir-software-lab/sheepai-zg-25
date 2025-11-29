@@ -1,4 +1,4 @@
-import { eq, gte, sql } from "drizzle-orm";
+import { eq, gte, inArray, sql } from "drizzle-orm";
 import { engagementEvents } from "@/db/schema";
 import type { PopularityDeps } from "./deps";
 import type { ArticlePopularityStats, PopularityOptions } from "./types";
@@ -77,7 +77,7 @@ export const createPopularityService = (
 				opens: sql<number>`count(*) filter (where ${engagementEvents.eventType} = 'open')`,
 			})
 			.from(engagementEvents)
-			.where(sql`${engagementEvents.articleId} = ANY(${articleIds})`)
+			.where(inArray(engagementEvents.articleId, articleIds))
 			.groupBy(engagementEvents.articleId);
 
 		const popularityMap = new Map<string, ArticlePopularityStats>();

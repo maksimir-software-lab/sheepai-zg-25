@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 import { articles } from "@/db/schema";
 import type { ScrapedArticle } from "@/lib/services/rss/types";
 import type { ArticleIngestionDeps } from "./deps";
@@ -20,14 +20,19 @@ export const createArticleIngestionPipeline = (
 		tagService,
 	} = deps;
 
-	const articleExists = async (sourceUrl: string): Promise<boolean> => {
-		const existing = await db
-			.select({ id: articles.id })
-			.from(articles)
-			.where(eq(articles.sourceUrl, sourceUrl))
-			.limit(1);
+	const getExistingArticleUrls = async (
+		sourceUrls: string[],
+	): Promise<Set<string>> => {
+		if (sourceUrls.length === 0) {
+			return new Set();
+		}
 
-		return existing.length > 0;
+		const existing = await db
+			.select({ sourceUrl: articles.sourceUrl })
+			.from(articles)
+			.where(inArray(articles.sourceUrl, sourceUrls));
+
+		return new Set(existing.map((row) => row.sourceUrl));
 	};
 
 	const processArticle = async (
@@ -70,6 +75,30 @@ export const createArticleIngestionPipeline = (
 
 	const sleep = (ms: number): Promise<void> =>
 		new Promise((resolve) => setTimeout(resolve, ms));
+
+	const processInParallel = async <TItem, TResult>(
+		items: TItem[],
+		processor: (item: TItem, index: number) => Promise<TResult>,
+		concurrencyLimit: number,
+	): Promise<TResult[]> => {
+		const results: TResult[] = new Array(items.length);
+		let currentIndex = 0;
+
+		const processNext = async (): Promise<void> => {
+			while (currentIndex < items.length) {
+				const index = currentIndex++;
+				results[index] = await processor(items[index], index);
+			}
+		};
+
+		const workers = Array.from(
+			{ length: Math.min(concurrencyLimit, items.length) },
+			() => processNext(),
+		);
+
+		await Promise.all(workers);
+		return results;
+	};
 
 	const processWithRetry = async (
 		rawItem: ScrapedArticle,
@@ -125,80 +154,79 @@ export const createArticleIngestionPipeline = (
 			`[Article Ingestion] Fetched ${feedItems.length} items with full HTML content`,
 		);
 
-		for (let index = 0; index < feedItems.length; index++) {
-			const rawItem = feedItems[index];
-			console.log(
-				`[Article Ingestion] Processing article ${index + 1}/${feedItems.length}: "${rawItem.title}"`,
-			);
+		console.log("[Article Ingestion] Checking for existing articles...");
+		const allUrls = feedItems.map((item) => item.link);
+		const existingUrls = await getExistingArticleUrls(allUrls);
+		console.log(
+			`[Article Ingestion] Found ${existingUrls.size} existing articles`,
+		);
 
-			try {
-				console.log(
-					`[Article Ingestion] Checking if article exists: ${rawItem.link}`,
-				);
-				const exists = await articleExists(rawItem.link);
+		const newItems = feedItems.filter((item) => !existingUrls.has(item.link));
+		result.skipped = feedItems.length - newItems.length;
+		console.log(
+			`[Article Ingestion] ${newItems.length} new articles to process, ${result.skipped} skipped`,
+		);
 
-				if (exists) {
-					console.log(
-						`[Article Ingestion] Article already exists, skipping: "${rawItem.title}"`,
-					);
-					result.skipped++;
-					continue;
-				}
-
-				console.log(
-					`[Article Ingestion] Processing new article: "${rawItem.title}"`,
-				);
-				const processedArticle = await processWithRetry(rawItem);
-
-				if (processedArticle) {
-					console.log(
-						`[Article Ingestion] Article processed successfully, inserting into database...`,
-					);
-					const { tagNames, ...articleData } = processedArticle;
-
-					const [insertedArticle] = await db
-						.insert(articles)
-						.values(articleData)
-						.returning({ id: articles.id });
-
-					console.log(
-						`[Article Ingestion] Article inserted with ID: ${insertedArticle.id}`,
-					);
-					console.log(
-						`[Article Ingestion] Processing ${tagNames.length} tags: ${tagNames.join(", ")}`,
-					);
-
-					const tagRecords = await tagService.findOrCreateTags(tagNames);
-					console.log(
-						`[Article Ingestion] Found/created ${tagRecords.length} tags`,
-					);
-
-					await tagService.linkTagsToArticle(
-						insertedArticle.id,
-						tagRecords.map((tag) => tag.id),
-					);
-					console.log(
-						`[Article Ingestion] Tags linked to article ID ${insertedArticle.id}`,
-					);
-
-					result.newArticles++;
-					console.log(
-						`[Article Ingestion] Successfully ingested article: "${rawItem.title}"`,
-					);
-				}
-			} catch (error) {
-				result.failed++;
-				const errorMessage =
-					error instanceof Error ? error.message : String(error);
-				console.error(
-					`[Article Ingestion] Failed to process "${rawItem.title}": ${errorMessage}`,
-					error,
-				);
-				result.errors.push(
-					`Failed to process "${rawItem.title}": ${errorMessage}`,
-				);
-			}
+		if (newItems.length === 0) {
+			console.log("[Article Ingestion] No new articles to process");
+			return result;
 		}
+
+		console.log(
+			`[Article Ingestion] Processing ${newItems.length} articles with concurrency limit of ${config.batchSize}...`,
+		);
+
+		await processInParallel(
+			newItems,
+			async (rawItem, index) => {
+				console.log(
+					`[Article Ingestion] Processing article ${index + 1}/${newItems.length}: "${rawItem.title}"`,
+				);
+
+				try {
+					const processedArticle = await processWithRetry(rawItem);
+
+					if (processedArticle) {
+						console.log(
+							`[Article Ingestion] Article processed successfully, inserting into database: "${rawItem.title}"`,
+						);
+						const { tagNames, ...articleData } = processedArticle;
+
+						const [insertedArticle] = await db
+							.insert(articles)
+							.values(articleData)
+							.returning({ id: articles.id });
+
+						console.log(
+							`[Article Ingestion] Article inserted with ID: ${insertedArticle.id}`,
+						);
+
+						const tagRecords = await tagService.findOrCreateTags(tagNames);
+						await tagService.linkTagsToArticle(
+							insertedArticle.id,
+							tagRecords.map((tag) => tag.id),
+						);
+
+						result.newArticles++;
+						console.log(
+							`[Article Ingestion] Successfully ingested article: "${rawItem.title}"`,
+						);
+					}
+				} catch (error) {
+					result.failed++;
+					const errorMessage =
+						error instanceof Error ? error.message : String(error);
+					console.error(
+						`[Article Ingestion] Failed to process "${rawItem.title}": ${errorMessage}`,
+						error,
+					);
+					result.errors.push(
+						`Failed to process "${rawItem.title}": ${errorMessage}`,
+					);
+				}
+			},
+			config.batchSize,
+		);
 
 		console.log("[Article Ingestion] Ingestion complete!");
 		console.log(

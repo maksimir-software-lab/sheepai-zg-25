@@ -189,7 +189,8 @@
 			"readFullArticle": "Read",
 			"clockAriaLabel": "Clock",
 			"likeAriaLabel": "Like article",
-			"dislikeAriaLabel": "Dislike article"
+			"dislikeAriaLabel": "Dislike article",
+			"relevanceMatch": "{score}% match"
 		},
 		"detail": {
 			"backToDashboard": "Back to Dashboard",

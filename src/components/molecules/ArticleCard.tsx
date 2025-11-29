@@ -22,12 +22,14 @@ interface Props {
 	article: Article;
 	animationDelay: number;
 	initialEngagement?: EngagementStatus;
+	relevanceScore?: number;
 }
 
 export const ArticleCard: React.FC<Props> = ({
 	article,
 	animationDelay,
 	initialEngagement,
+	relevanceScore,
 }) => {
 	const t = useTranslations("article.card");
 	const { like, dislike, hasLiked, hasDisliked, isLoading } =
@@ -45,9 +47,18 @@ export const ArticleCard: React.FC<Props> = ({
 
 			<div className="relative flex flex-col gap-3 md:gap-5">
 				<div className="space-y-2 md:space-y-3">
-					<h2 className="text-lg md:text-xl font-bold leading-tight group-hover:text-primary transition-colors duration-300">
-						{article.title}
-					</h2>
+					<div className="flex items-start justify-between gap-3">
+						<h2 className="text-lg md:text-xl font-bold leading-tight group-hover:text-primary transition-colors duration-300">
+							{article.title}
+						</h2>
+						{relevanceScore !== undefined && (
+							<span className="flex-shrink-0 px-2.5 py-1 text-xs font-semibold rounded-full bg-primary/10 text-primary border border-primary/20">
+								{t("relevanceMatch", {
+									score: Math.round(relevanceScore * 100),
+								})}
+							</span>
+						)}
+					</div>
 					<time className="text-xs md:text-sm font-semibold text-muted-foreground/80 flex items-center gap-1.5 md:gap-2">
 						<svg
 							className="w-3.5 h-3.5 md:w-4 md:h-4 flex-shrink-0"
