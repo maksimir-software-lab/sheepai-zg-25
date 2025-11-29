@@ -30,6 +30,7 @@ jobs:
         echo INFOBIP_BASE_URL=${{ secrets.INFOBIP_BASE_URL }} >> .env
         echo NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} >> .env
         echo NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }} >> .env
+        echo CRON_SECRET=${{ secrets.CRON_SECRET }} >> .env
         docker build -t sheepai:latest .
         docker save sheepai:latest | gzip > image.tar.gz
     
