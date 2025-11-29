@@ -1,6 +1,6 @@
 "use client";
 
-import { Database, LayoutDashboard, Rss, Server, Settings } from "lucide-react";
+import { LayoutDashboard, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -57,49 +57,6 @@ export const AppSidebar: React.FC = () => {
 									<Link href="/settings">
 										<Settings />
 										<span>{t("sidebar.nav.settings")}</span>
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-						</SidebarMenu>
-					</SidebarGroupContent>
-				</SidebarGroup>
-				<SidebarGroup>
-					<SidebarGroupLabel>{t("sidebar.groups.admin")}</SidebarGroupLabel>
-					<SidebarGroupContent>
-						<SidebarMenu>
-							<SidebarMenuItem>
-								<SidebarMenuButton
-									asChild
-									isActive={pathname === "/debug"}
-									tooltip={t("sidebar.nav.debug")}
-								>
-									<Link href="/debug">
-										<Database />
-										<span>{t("sidebar.nav.debug")}</span>
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-							<SidebarMenuItem>
-								<SidebarMenuButton
-									asChild
-									isActive={pathname === "/scraper-test"}
-									tooltip={t("sidebar.nav.scraperTest")}
-								>
-									<Link href="/scraper-test">
-										<Rss />
-										<span>{t("sidebar.nav.scraperTest")}</span>
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-							<SidebarMenuItem>
-								<SidebarMenuButton
-									asChild
-									isActive={pathname === "/backend-validation"}
-									tooltip={t("sidebar.nav.backendValidation")}
-								>
-									<Link href="/backend-validation">
-										<Server />
-										<span>{t("sidebar.nav.backendValidation")}</span>
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
