@@ -3,8 +3,10 @@
 import { Compass, Home, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export const MobileNavigation: React.FC = () => {
+	const t = useTranslations("navigation.mobile");
 	const pathname = usePathname();
 
 	const isForYouActive =
@@ -24,7 +26,7 @@ export const MobileNavigation: React.FC = () => {
 					}`}
 				>
 					<Home className={`w-6 h-6 ${isForYouActive ? "fill-current" : ""}`} />
-					<span className="text-xs font-medium">For You</span>
+					<span className="text-xs font-medium">{t("forYou")}</span>
 				</Link>
 
 				<Link
@@ -38,7 +40,7 @@ export const MobileNavigation: React.FC = () => {
 					<Compass
 						className={`w-6 h-6 ${isExploreActive ? "fill-current" : ""}`}
 					/>
-					<span className="text-xs font-medium">Explore</span>
+					<span className="text-xs font-medium">{t("explore")}</span>
 				</Link>
 
 				<Link
@@ -52,7 +54,7 @@ export const MobileNavigation: React.FC = () => {
 					<Settings
 						className={`w-6 h-6 ${isSettingsActive ? "fill-current" : ""}`}
 					/>
-					<span className="text-xs font-medium">Settings</span>
+					<span className="text-xs font-medium">{t("settings")}</span>
 				</Link>
 			</div>
 		</nav>

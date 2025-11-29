@@ -74,6 +74,7 @@ export const userInterests = pgTable(
 		userId: varchar("user_id", { length: 255 })
 			.notNull()
 			.references(() => users.id, { onDelete: "cascade" }),
+		text: text("text").notNull(),
 		embedding: vector("embedding", { dimensions: 2000 }).notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at").defaultNow().notNull(),

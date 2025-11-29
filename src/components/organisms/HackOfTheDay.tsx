@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 interface Article {
 	id: string;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export const HackOfTheDay: React.FC<Props> = ({ article }) => {
+	const t = useTranslations("hackOfTheDay");
 	return (
 		<div className="w-full max-w-6xl mx-auto">
 			<Link href={`/article/${article.id}`}>
@@ -26,12 +28,12 @@ export const HackOfTheDay: React.FC<Props> = ({ article }) => {
 									className="w-4 h-4 text-primary animate-pulse"
 									fill="currentColor"
 									viewBox="0 0 24 24"
-									aria-label="Star"
+									aria-label={t("starAriaLabel")}
 								>
 									<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
 								</svg>
 								<span className="text-xs font-bold text-primary uppercase tracking-wide">
-									Hack of the Day
+									{t("label")}
 								</span>
 							</div>
 							<h2 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors duration-300 truncate">
