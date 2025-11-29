@@ -1,6 +1,6 @@
 {
-	"title": "SheepAI",
-	"description": "Entry for SheepAI Zagreb 2025 hackathon.",
+	"title": "NewsEgg",
+	"description": "Entry for NewsEgg Zagreb 2025 hackathon.",
 	"home": {},
 	"backend-validation": {
 		"pageTitle": "Backend Validation Demo",
@@ -25,7 +25,7 @@
 	},
 	"auth": {
 		"login": {
-			"title": "Sign in to SheepAI",
+			"title": "Sign in to NewsEgg",
 			"description": "Welcome! Please sign in to continue.",
 			"google": "Continue with Google",
 			"github": "Continue with GitHub"
