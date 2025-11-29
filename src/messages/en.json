@@ -224,7 +224,8 @@
 		"mobile": {
 			"forYou": "For You",
 			"explore": "Explore",
-			"settings": "Settings"
+			"settings": "Settings",
+			"logout": "Logout"
 		}
 	},
 	"articleOfTheDay": {

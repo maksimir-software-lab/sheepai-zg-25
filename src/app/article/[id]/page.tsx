@@ -55,7 +55,7 @@ export default async function Page({ params }: Props) {
 							{article.title}
 						</h1>
 
-						<div className="flex items-center gap-4">
+						<div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
 							<time className="text-sm font-semibold text-muted-foreground/80 flex items-center gap-2">
 								<svg
 									className="w-4 h-4"
@@ -105,7 +105,7 @@ export default async function Page({ params }: Props) {
 							)}
 						</div>
 
-						<p className="text-lg text-muted-foreground leading-relaxed italic border-l-4 border-primary/30 pl-6">
+						<p className="text-base lg:text-lg text-muted-foreground leading-relaxed italic border-l-4 border-primary/30 pl-6">
 							{article.summary}
 						</p>
 					</div>

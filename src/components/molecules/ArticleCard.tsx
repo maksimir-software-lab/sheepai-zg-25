@@ -47,8 +47,8 @@ export const ArticleCard: React.FC<Props> = ({
 
 			<div className="relative flex flex-col gap-3 md:gap-5">
 				<div className="space-y-2 md:space-y-3">
-					<div className="flex items-start justify-between gap-3">
-						<h2 className="text-lg md:text-xl font-bold leading-tight group-hover:text-primary transition-colors duration-300">
+					<div className="flex flex-col lg:flex-row items-start gap-3">
+						<h2 className="text-base font-bold leading-tight group-hover:text-primary transition-colors duration-300">
 							{article.title}
 						</h2>
 						{relevanceScore !== undefined && (
