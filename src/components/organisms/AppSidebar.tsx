@@ -42,9 +42,9 @@ export const AppSidebar: React.FC = () => {
 									isActive={pathname === "/backend-validation"}
 									tooltip="Backend Validation"
 								>
-									<Link href="/backend-validation">
+									<Link href="/debug">
 										<Database />
-										<span>Backend Validation</span>
+										<span>Debug</span>
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>

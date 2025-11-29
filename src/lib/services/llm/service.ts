@@ -23,9 +23,9 @@ export const createLlmService = (deps: LlmDeps): ILlmService => {
 		return response.text;
 	};
 
-	const generateObjectResponse = async <TSchema extends z.ZodType>(
-		params: GenerateObjectParams<TSchema>,
-	): Promise<z.infer<TSchema>> => {
+	const generateObjectResponse = async <T extends z.ZodType>(
+		params: GenerateObjectParams<T>,
+	): Promise<z.infer<T>> => {
 		const response = await generateObject({
 			model: openRouterAiSdk(params.model ?? config.defaultModel),
 			schema: params.schema,
@@ -34,7 +34,7 @@ export const createLlmService = (deps: LlmDeps): ILlmService => {
 			seed: params.seed,
 		});
 
-		return response.object;
+		return response.object as z.infer<T>;
 	};
 
 	return {

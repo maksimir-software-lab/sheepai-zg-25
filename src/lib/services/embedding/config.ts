@@ -1,6 +1,6 @@
 export const EMBEDDING_CONFIG = {
 	model: "google/gemini-embedding-001",
-	dimensions: 3072,
+	dimensions: 2000,
 } as const;
 
 export type EmbeddingConfig = {

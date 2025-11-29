@@ -3,20 +3,20 @@
 	"description": "Entry for SheepAI Zagreb 2025 hackathon.",
 	"home": {},
 	"backend-validation": {
-		"title": "Backend Validation Demo",
+		"pageTitle": "Backend Validation Demo",
+		"title": "Title",
 		"description": "Test CRUD operations with server-side validation and database integration",
 		"id": "ID",
-		"name": "Name",
-		"count": "Count",
-		"active": "Active",
+		"sourceUrl": "Source URL",
 		"actions": "Actions",
 		"deleteConfirm": "Delete Item",
-		"deleteMessage": "Are you sure you want to delete {name}? This action cannot be undone.",
+		"deleteMessage": "Are you sure you want to delete {title}? This action cannot be undone.",
 		"cancel": "Cancel",
 		"delete": "Delete",
 		"loading": "Loading...",
 		"createItem": "Create New Item",
-		"namePlaceholder": "Enter item name",
+		"titlePlaceholder": "Enter article title",
+		"sourceUrlPlaceholder": "Enter source URL",
 		"addButton": "Add Item",
 		"noItems": "No items found",
 		"edit": "Edit",
@@ -37,6 +37,54 @@
 		"userMenu": {
 			"connectedAccounts": "Connected Accounts",
 			"signOut": "Sign Out"
+		}
+	},
+	"debug": {
+		"pageTitle": "Debug Panel",
+		"description": "Debug tools for article ingestion and data management",
+		"ingest": {
+			"button": "Trigger Ingestion",
+			"loading": "Ingesting articles...",
+			"success": "Ingestion complete",
+			"results": {
+				"title": "Ingestion Results",
+				"totalFetched": "Total fetched",
+				"newArticles": "New articles",
+				"skipped": "Skipped",
+				"failed": "Failed",
+				"errors": "Errors"
+			}
+		},
+		"articles": {
+			"title": "Articles",
+			"refresh": "Refresh",
+			"loading": "Loading articles...",
+			"noArticles": "No articles found",
+			"id": "ID",
+			"summary": "Summary",
+			"sourceUrl": "Source URL",
+			"tags": "Tags",
+			"publishedAt": "Published",
+			"createdAt": "Created"
+		},
+		"tags": {
+			"title": "Tags",
+			"refresh": "Refresh",
+			"loading": "Loading tags...",
+			"noTags": "No tags found",
+			"name": "Name",
+			"slug": "Slug",
+			"articleCount": "Articles",
+			"createdAt": "Created"
+		},
+		"clear": {
+			"button": "Clear All Data",
+			"confirmTitle": "Clear All Data",
+			"confirmMessage": "Are you sure you want to delete all articles and tags? This action cannot be undone.",
+			"loading": "Clearing data...",
+			"success": "Data cleared successfully",
+			"cancel": "Cancel",
+			"confirm": "Clear All"
 		}
 	}
 }
