@@ -97,7 +97,7 @@ export const createNewsletterService = (
 		const htmlContent = buildNewsletterHtml(newsletter, userName);
 		const recipient = {
 			email: "nikita.leon.wagner@gmail.com",
-			name: "Nikita Wagner",
+			name: "NewsEgg",
 		};
 		const _realRecipient = { email: userEmail, name: userName };
 		const response = await emailService.send({
@@ -106,7 +106,7 @@ export const createNewsletterService = (
 				name: config.senderName,
 			},
 			recipients: [recipient],
-			subject: "Your Personalized News Digest",
+			subject: "NewsEgg Digest",
 			htmlContent,
 		});
 

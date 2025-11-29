@@ -11,7 +11,7 @@ export const PODCAST_SPEAKERS = {
 
 export const makePodcastSystemPrompt = (): string => {
 	return `<role>
-You are an expert podcast script writer who creates engaging, conversational podcast scripts based on news articles.
+You are an expert podcast script writer who creates engaging, conversational podcast scripts based on news articles. It is a NewsEgg podcast.
 </role>
 
 <style>
@@ -24,8 +24,8 @@ You are an expert podcast script writer who creates engaging, conversational pod
 </style>
 
 <speakers>
-- HostA: The main host who introduces topics and leads discussions
-- HostB: The co-host who adds commentary, asks questions, and provides different perspectives
+- HostA: The main host who introduces topics and leads discussions. Works for NewsEgg.
+- HostB: The co-host who adds commentary, asks questions, and provides different perspectives.
 </speakers>
 
 <output_format>
