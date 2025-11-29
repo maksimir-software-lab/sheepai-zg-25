@@ -3,6 +3,7 @@ import { OpenRouter } from "@openrouter/sdk";
 import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
 import { db } from "@/db";
+import { createArticleService } from "./article/service";
 import { EMAIL_CONFIG } from "./email/config";
 import { createEmailService } from "./email/service";
 import { EMBEDDING_CONFIG } from "./embedding/config";
@@ -28,6 +29,13 @@ import { createUserInterestService } from "./user-interest/service";
 import { USER_PROFILE_CONFIG } from "./user-profile/config";
 import { createUserProfileService } from "./user-profile/service";
 
+export type { ArticleDeps } from "./article/deps";
+export { createArticleService } from "./article/service";
+export type {
+	ArticleData,
+	ArticleForPodcast,
+	IArticleService as ArticleProvider,
+} from "./article/types";
 export type { EmailConfig } from "./email/config";
 export { EMAIL_CONFIG } from "./email/config";
 export type { EmailDeps } from "./email/deps";
@@ -213,9 +221,15 @@ export const createServices = (params: CreateServicesParams) => {
 		apiKey: openaiApiKey,
 	});
 
+	const articleService = createArticleService({
+		db,
+	});
+
 	const podcastService = createPodcastService({
 		openai,
 		storageService,
+		llmService,
+		articleService,
 		config: PODCAST_CONFIG,
 	});
 
@@ -250,6 +264,7 @@ export const createServices = (params: CreateServicesParams) => {
 		similarity: similarityService,
 		storage: storageService,
 		podcast: podcastService,
+		article: articleService,
 		userInterest: userInterestService,
 		userProfile: userProfileService,
 	};

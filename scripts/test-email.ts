@@ -15,8 +15,10 @@ const testEmail = async () => {
 				},
 			],
 			subject: "Test Email from SheepAI",
-			textContent: "This is a test email sent from the SheepAI email service. If you receive this, the email service is working correctly!",
-			htmlContent: "<p>This is a test email sent from the SheepAI email service.</p><p>If you receive this, the email service is working correctly!</p>",
+			textContent:
+				"This is a test email sent from the SheepAI email service. If you receive this, the email service is working correctly!",
+			htmlContent:
+				"<p>This is a test email sent from the SheepAI email service.</p><p>If you receive this, the email service is working correctly!</p>",
 		});
 
 		console.log("✅ Email sent successfully!");
@@ -28,4 +30,3 @@ const testEmail = async () => {
 };
 
 testEmail();
-

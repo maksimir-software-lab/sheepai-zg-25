@@ -2,6 +2,7 @@ import dedent from "dedent";
 
 export const articleSummaryPrompt = dedent`
 	You are a professional tech news analyst. Analyze the following article and provide a structured summary.
+	The podcast / news article name is AggEssential.
 
 	Title: {{title}}
 

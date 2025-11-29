@@ -54,3 +54,26 @@ export type GeneratePodcastParams = z.infer<typeof generatePodcastParamsSchema>;
 export type GeneratePodcastResponse = z.infer<
 	typeof generatePodcastResponseSchema
 >;
+
+export const podcastFormatSchema = z.enum(["podcast", "news-broadcast"]);
+
+export type PodcastFormat = z.infer<typeof podcastFormatSchema>;
+
+export const generateFromArticlesParamsSchema = z.object({
+	articleIds: z.array(z.string().uuid()).min(1),
+	format: podcastFormatSchema,
+	outputFormat: audioFormatSchema.optional(),
+	speed: z.number().min(0.25).max(4.0).optional(),
+	model: ttsModelSchema.optional(),
+});
+
+export type GenerateFromArticlesParams = z.infer<
+	typeof generateFromArticlesParamsSchema
+>;
+
+export type IPodcastService = {
+	generate: (params: GeneratePodcastParams) => Promise<GeneratePodcastResponse>;
+	generateFromArticles: (
+		params: GenerateFromArticlesParams,
+	) => Promise<GeneratePodcastResponse>;
+};
