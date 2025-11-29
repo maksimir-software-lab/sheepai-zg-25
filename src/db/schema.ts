@@ -154,11 +154,13 @@ export const usersRelations = relations(users, ({ many, one }) => ({
 	tagInterests: many(userTagInterests),
 	engagementEvents: many(engagementEvents),
 	profile: one(userProfiles),
+	newsletterArticles: many(newsletterArticles),
 }));
 
 export const articlesRelations = relations(articles, ({ many }) => ({
 	engagementEvents: many(engagementEvents),
 	articleTags: many(articleTags),
+	newsletterArticles: many(newsletterArticles),
 }));
 
 export const tagsRelations = relations(tags, ({ many }) => ({
@@ -250,3 +252,28 @@ export const articleTldrsRelations = relations(articleTldrs, ({ one }) => ({
 		references: [users.id],
 	}),
 }));
+
+export const newsletterArticles = pgTable("newsletter_articles", {
+	id: uuid("id").primaryKey().defaultRandom(),
+	userId: varchar("user_id", { length: 255 })
+		.notNull()
+		.references(() => users.id, { onDelete: "cascade" }),
+	articleId: uuid("article_id")
+		.notNull()
+		.references(() => articles.id, { onDelete: "cascade" }),
+	newsletterSentAt: timestamp("newsletter_sent_at").defaultNow().notNull(),
+});
+
+export const newsletterArticlesRelations = relations(
+	newsletterArticles,
+	({ one }) => ({
+		user: one(users, {
+			fields: [newsletterArticles.userId],
+			references: [users.id],
+		}),
+		article: one(articles, {
+			fields: [newsletterArticles.articleId],
+			references: [articles.id],
+		}),
+	}),
+);

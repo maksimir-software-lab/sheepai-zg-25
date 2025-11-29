@@ -15,6 +15,8 @@ import { FEED_CONFIG } from "./feed/config";
 import { createFeedService } from "./feed/service";
 import { LLM_CONFIG } from "./llm/config";
 import { createLlmService } from "./llm/service";
+import { NEWSLETTER_CONFIG } from "./newsletter/config";
+import { createNewsletterService } from "./newsletter/service";
 import { PODCAST_CONFIG } from "./podcast/config";
 import { createPodcastService } from "./podcast/service";
 import { POPULARITY_CONFIG } from "./popularity/config";
@@ -93,6 +95,19 @@ export type {
 	GenerateObjectParams,
 	GenerateTextParams,
 } from "./llm/types";
+export type { NewsletterConfig } from "./newsletter/config";
+export { NEWSLETTER_CONFIG } from "./newsletter/config";
+export type { NewsletterDeps } from "./newsletter/deps";
+export { createNewsletterService } from "./newsletter/service";
+export type {
+	GenerateNewsletterParams,
+	GenerateNewsletterResult,
+	INewsletterService as NewsletterProvider,
+	NewsletterArticle,
+	NewsletterSummary,
+	SendNewsletterParams,
+	SendNewsletterResult,
+} from "./newsletter/types";
 export type { PodcastConfig } from "./podcast/config";
 export { PODCAST_CONFIG } from "./podcast/config";
 export type { PodcastDeps } from "./podcast/deps";
@@ -279,12 +294,22 @@ export const createServices = (params: CreateServicesParams) => {
 		config: FEED_CONFIG,
 	});
 
+	const newsletterService = createNewsletterService({
+		db,
+		feedService,
+		emailService,
+		llmService,
+		podcastService,
+		config: NEWSLETTER_CONFIG,
+	});
+
 	return {
 		email: emailService,
 		embedding: embeddingService,
 		engagement: engagementService,
 		feed: feedService,
 		llm: llmService,
+		newsletter: newsletterService,
 		popularity: popularityService,
 		rss: rssService,
 		similarity: similarityService,

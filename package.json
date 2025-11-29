@@ -13,7 +13,8 @@
 		"neon:setup": "bash ./scripts/neon-setup.sh",
 		"checkout": "bun ./scripts/checkout.ts",
 		"ingest": "bun ./scripts/ingest-articles.ts",
-		"test:podcast": "bun ./scripts/test-podcast.ts"
+		"test:podcast": "bun ./scripts/test-podcast.ts",
+		"test:newsletter": "bun ./scripts/test-newsletter.ts"
 	},
 	"dependencies": {
 		"@clerk/nextjs": "6.35.5",
