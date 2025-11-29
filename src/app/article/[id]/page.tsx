@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getArticle } from "@/actions/getArticle";
+import { getArticleTldr } from "@/actions/getArticleTldr";
 import { ArticleEngagementWrapper } from "@/components/molecules/ArticleEngagementWrapper";
 import { Button } from "@/components/ui/button";
 import { sanitizeArticleContent } from "@/lib/utils/sanitizeArticleContent";
@@ -22,6 +23,12 @@ export default async function Page({ params }: Props) {
 	}
 
 	const { article } = result;
+
+	const tldrResult = await getArticleTldr(id);
+	const tldrSummary =
+		tldrResult.success && tldrResult.tldr
+			? tldrResult.tldr.summary
+			: article.summary;
 
 	return (
 		<div className="w-full max-w-4xl mx-auto">
@@ -106,7 +113,7 @@ export default async function Page({ params }: Props) {
 						</div>
 
 						<p className="text-base lg:text-lg text-muted-foreground leading-relaxed italic border-l-4 border-primary/30 pl-6">
-							{article.summary}
+							{tldrSummary}
 						</p>
 					</div>
 
