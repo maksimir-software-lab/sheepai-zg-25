@@ -14,7 +14,8 @@
 			"!dist",
 			"!build",
 			"!src/components/ui",
-			"!src/components/animate-ui"
+			"!src/components/animate-ui",
+			"!src/db/migrations/meta"
 		]
 	},
 	"formatter": {
