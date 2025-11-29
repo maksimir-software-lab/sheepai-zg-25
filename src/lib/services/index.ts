@@ -7,6 +7,10 @@ import { EMAIL_CONFIG } from "./email/config";
 import { createEmailService } from "./email/service";
 import { EMBEDDING_CONFIG } from "./embedding/config";
 import { createEmbeddingService } from "./embedding/service";
+import { ENGAGEMENT_CONFIG } from "./engagement/config";
+import { createEngagementService } from "./engagement/service";
+import { FEED_CONFIG } from "./feed/config";
+import { createFeedService } from "./feed/service";
 import { LLM_CONFIG } from "./llm/config";
 import { createLlmService } from "./llm/service";
 import { PODCAST_CONFIG } from "./podcast/config";
@@ -17,6 +21,8 @@ import { SIMILARITY_CONFIG } from "./similarity/config";
 import { createSimilarityService } from "./similarity/service";
 import { STORAGE_CONFIG } from "./storage/config";
 import { createStorageService } from "./storage/service";
+import { USER_INTEREST_CONFIG } from "./user-interest/config";
+import { createUserInterestService } from "./user-interest/service";
 
 export type { EmailConfig } from "./email/config";
 export { EMAIL_CONFIG } from "./email/config";
@@ -28,6 +34,31 @@ export { EMBEDDING_CONFIG } from "./embedding/config";
 export type { EmbeddingDeps } from "./embedding/deps";
 export { createEmbeddingService } from "./embedding/service";
 export type { IEmbeddingService as EmbeddingProvider } from "./embedding/types";
+export type { EngagementConfig } from "./engagement/config";
+export { ENGAGEMENT_CONFIG } from "./engagement/config";
+export type { EngagementDeps } from "./engagement/deps";
+export {
+	createEngagementService,
+	type IEngagementService as EngagementProvider,
+} from "./engagement/service";
+export type {
+	ArticleEngagementStatus,
+	EngagementEvent,
+	EngagementEventType,
+} from "./engagement/types";
+export type { FeedConfig } from "./feed/config";
+export { FEED_CONFIG } from "./feed/config";
+export type { FeedDeps } from "./feed/deps";
+export {
+	createFeedService,
+	type IFeedService as FeedProvider,
+} from "./feed/service";
+export type {
+	Article,
+	FeedArticle,
+	FeedOptions,
+	SearchOptions,
+} from "./feed/types";
 export type { LlmConfig } from "./llm/config";
 export { LLM_CONFIG } from "./llm/config";
 export type { LlmDeps } from "./llm/deps";
@@ -76,6 +107,14 @@ export { STORAGE_CONFIG } from "./storage/config";
 export type { StorageDeps } from "./storage/deps";
 export { createStorageService } from "./storage/service";
 export type { IStorageService as StorageProvider } from "./storage/types";
+export type { UserInterestConfig } from "./user-interest/config";
+export { USER_INTEREST_CONFIG } from "./user-interest/config";
+export type { UserInterestDeps } from "./user-interest/deps";
+export {
+	createUserInterestService,
+	type IUserInterestService as UserInterestProvider,
+} from "./user-interest/service";
+export type { UserInterest } from "./user-interest/types";
 
 type CreateServicesParams = {
 	openRouterApiKey: string;
@@ -127,6 +166,11 @@ export const createServices = (params: CreateServicesParams) => {
 		config: SIMILARITY_CONFIG,
 	});
 
+	const engagementService = createEngagementService({
+		db,
+		config: ENGAGEMENT_CONFIG,
+	});
+
 	const storageService = createStorageService({
 		supabase,
 		config: {
@@ -146,14 +190,30 @@ export const createServices = (params: CreateServicesParams) => {
 		config: PODCAST_CONFIG,
 	});
 
+	const userInterestService = createUserInterestService({
+		db,
+		embeddingService,
+		config: USER_INTEREST_CONFIG,
+	});
+
+	const feedService = createFeedService({
+		db,
+		similarityService,
+		embeddingService,
+		config: FEED_CONFIG,
+	});
+
 	return {
 		email: emailService,
 		embedding: embeddingService,
+		engagement: engagementService,
+		feed: feedService,
 		llm: llmService,
 		rss: rssService,
 		similarity: similarityService,
 		storage: storageService,
 		podcast: podcastService,
+		userInterest: userInterestService,
 	};
 };
 

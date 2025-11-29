@@ -44,11 +44,15 @@ jobs:
         if: github.event.pull_request.merged == true
         uses: actions/checkout@v4
 
+      - name: Setup Bun
+        if: github.event.pull_request.merged == true
+        uses: oven-sh/setup-bun@v2
+
       - name: Apply migrations to production
         if: github.event.pull_request.merged == true
         run: |
-          npm install
-          npm run db:generate
-          npm run db:migrate
+          bun install
+          bun run db:generate
+          bun run db:migrate
         env:
           DATABASE_URL: '${{ secrets.DATABASE_URL }}'
