@@ -18,6 +18,9 @@ import {
 
 export type IPodcastService = {
 	generate: (params: GeneratePodcastParams) => Promise<GeneratePodcastResponse>;
+	generateFromArticles: (
+		params: GenerateFromArticlesParams,
+	) => Promise<GeneratePodcastResponse>;
 };
 
 export const createPodcastService = (deps: PodcastDeps): IPodcastService => {
