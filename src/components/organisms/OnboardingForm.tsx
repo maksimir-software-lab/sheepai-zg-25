@@ -1,16 +1,20 @@
 "use client";
 
+import Image, { type StaticImageData } from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import nytimesLogo from "@/assets/img/nytimes.png";
+import telegramLogo from "@/assets/img/telegram.png";
+import thnLogo from "@/assets/img/thn.png";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface Portal {
 	id: string;
 	name: string;
-	logo: string;
+	logo: string | StaticImageData;
+	isImage?: boolean;
 }
 
 interface Category {
@@ -19,9 +23,9 @@ interface Category {
 }
 
 const portals: Portal[] = [
-	{ id: "portal1", name: "Portal1", logo: "🌐" },
-	{ id: "portal2", name: "Portal2", logo: "📰" },
-	{ id: "portal3", name: "Portal3", logo: "📡" },
+	{ id: "portal1", name: "The Hacker News", logo: thnLogo, isImage: true },
+	{ id: "portal2", name: "NY Times", logo: nytimesLogo, isImage: true },
+	{ id: "portal3", name: "Telegram", logo: telegramLogo, isImage: true },
 ];
 
 const categories: Category[] = [
@@ -87,12 +91,6 @@ export const OnboardingForm: React.FC = () => {
 
 	return (
 		<div className="w-full max-w-2xl mx-auto px-4 py-8">
-			<div className="mb-12 text-center">
-				<h1 className="text-4xl md:text-5xl font-bold mb-2">
-					Welcome to our portal aggregator
-				</h1>
-			</div>
-
 			<div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 min-h-[400px] flex flex-col">
 				<div className="mb-8">
 					<div className="flex items-center justify-center gap-2">
@@ -147,18 +145,25 @@ export const OnboardingForm: React.FC = () => {
 											}}
 											onClick={() => handlePortalToggle(portal.id)}
 										>
-											<Checkbox
-												id={portal.id}
-												checked={selectedPortals.includes(portal.id)}
-												onCheckedChange={() => handlePortalToggle(portal.id)}
-											/>
-											<span className="text-3xl">{portal.logo}</span>
-											<Label
-												htmlFor={portal.id}
-												className="text-lg font-medium cursor-pointer flex-1"
-											>
+											{portal.isImage ? (
+												<div className="w-10 h-10 flex-shrink-0">
+													<Image
+														src={portal.logo as StaticImageData}
+														alt={portal.name}
+														width={40}
+														height={40}
+														className="rounded-md w-full h-full"
+														style={{ objectFit: "cover" }}
+													/>
+												</div>
+											) : (
+												<span className="text-3xl">
+													{portal.logo as string}
+												</span>
+											)}
+											<span className="text-lg font-medium flex-1">
 												{portal.name}
-											</Label>
+											</span>
 										</button>
 									))}
 								</div>
@@ -214,7 +219,7 @@ export const OnboardingForm: React.FC = () => {
 										<button
 											type="button"
 											key={category.id}
-											className="flex items-center space-x-3 p-4 rounded-lg border-2 transition-all duration-200 hover:border-gray-300 cursor-pointer text-left"
+											className="flex items-center justify-center p-4 rounded-lg border-2 transition-all duration-200 hover:border-gray-300 cursor-pointer text-left"
 											style={{
 												borderColor: selectedCategories.includes(category.id)
 													? "#000"
@@ -222,19 +227,9 @@ export const OnboardingForm: React.FC = () => {
 											}}
 											onClick={() => handleCategoryToggle(category.id)}
 										>
-											<Checkbox
-												id={category.id}
-												checked={selectedCategories.includes(category.id)}
-												onCheckedChange={() =>
-													handleCategoryToggle(category.id)
-												}
-											/>
-											<Label
-												htmlFor={category.id}
-												className="text-base font-medium cursor-pointer flex-1"
-											>
+											<span className="text-base font-medium">
 												{category.name}
-											</Label>
+											</span>
 										</button>
 									))}
 								</div>

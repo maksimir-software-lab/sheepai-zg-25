@@ -16,7 +16,7 @@ export const saveArticles = async (scrapedArticles: ScrapedArticle[]) => {
 		);
 
 		for (const article of scrapedArticles) {
-			if (!article.contentMarkdown) {
+			if (!article.contentHtml) {
 				continue;
 			}
 
@@ -36,7 +36,7 @@ export const saveArticles = async (scrapedArticles: ScrapedArticle[]) => {
 					title: article.title,
 					summary: article.description,
 					keyFacts: [],
-					content: article.contentMarkdown,
+					content: article.contentHtml,
 					embedding: placeholderEmbedding,
 					sourceUrl: article.link,
 					publishedAt: article.pubDate,
