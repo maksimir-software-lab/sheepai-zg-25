@@ -11,8 +11,7 @@ export const createEmailService = (deps: EmailDeps): IEmailService => {
 
 	const send = async (request: SendEmailRequest): Promise<InfobipResponse> => {
 		const requestBody = buildInfobipRequestBody(request);
-
-		const response = await fetch(`${config.baseUrl}${config.apiPath}`, {
+		const response = await fetch(`https://${config.baseUrl}${config.apiPath}`, {
 			method: "POST",
 			headers: {
 				Authorization: `App ${config.apiKey}`,
