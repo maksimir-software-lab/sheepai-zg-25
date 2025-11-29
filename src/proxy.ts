@@ -1,4 +1,8 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+
+const isAuthDisabled = process.env.NEXT_PUBLIC_AUTH_DISABLED === "true";
 
 const isPublicRoute = createRouteMatcher([
 	"/",
@@ -8,11 +12,17 @@ const isPublicRoute = createRouteMatcher([
 	"/sso-callback(.*)",
 ]);
 
-export default clerkMiddleware(async (auth, request) => {
-	if (!isPublicRoute(request)) {
-		await auth.protect();
-	}
-});
+const noopMiddleware = (_request: NextRequest) => {
+	return NextResponse.next();
+};
+
+export default isAuthDisabled
+	? noopMiddleware
+	: clerkMiddleware(async (auth, request) => {
+			if (!isPublicRoute(request)) {
+				await auth.protect();
+			}
+		});
 
 export const config = {
 	matcher: [
