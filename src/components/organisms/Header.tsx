@@ -22,7 +22,9 @@ export const Header: React.FC = () => {
 				<div></div>
 				<div className="flex items-center gap-2 sm:gap-4">
 					{isAuthDisabled ? (
-						<span className="text-sm text-muted-foreground">Auth Disabled</span>
+						<span className="text-sm text-muted-foreground">
+							{t("authDisabled")}
+						</span>
 					) : (
 						<>
 							<SignedOut>

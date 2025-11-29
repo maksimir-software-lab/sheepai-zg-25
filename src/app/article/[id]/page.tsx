@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { getArticle } from "@/actions/getArticle";
+import { ArticleEngagementWrapper } from "@/components/molecules/ArticleEngagementWrapper";
 import { Button } from "@/components/ui/button";
 import { sanitizeArticleContent } from "@/lib/utils/sanitizeArticleContent";
 
@@ -11,6 +13,7 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
+	const t = await getTranslations("article.detail");
 	const { id } = await params;
 	const result = await getArticle(id);
 
@@ -32,7 +35,7 @@ export default async function Page({ params }: Props) {
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
-						aria-label="Back arrow"
+						aria-label={t("backArrowAriaLabel")}
 					>
 						<path
 							strokeLinecap="round"
@@ -41,7 +44,7 @@ export default async function Page({ params }: Props) {
 							d="M11 17l-5-5m0 0l5-5m-5 5h12"
 						/>
 					</svg>
-					Back to Dashboard
+					{t("backToDashboard")}
 				</Button>
 			</Link>
 
@@ -59,7 +62,7 @@ export default async function Page({ params }: Props) {
 									fill="none"
 									viewBox="0 0 24 24"
 									stroke="currentColor"
-									aria-label="Clock"
+									aria-label={t("clockAriaLabel")}
 								>
 									<path
 										strokeLinecap="round"
@@ -88,7 +91,7 @@ export default async function Page({ params }: Props) {
 										fill="none"
 										viewBox="0 0 24 24"
 										stroke="currentColor"
-										aria-label="External link"
+										aria-label={t("externalLinkAriaLabel")}
 									>
 										<path
 											strokeLinecap="round"
@@ -97,7 +100,7 @@ export default async function Page({ params }: Props) {
 											d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
 										/>
 									</svg>
-									View Original Source
+									{t("viewOriginalSource")}
 								</a>
 							)}
 						</div>
@@ -114,6 +117,8 @@ export default async function Page({ params }: Props) {
 							}}
 						/>
 					</div>
+
+					<ArticleEngagementWrapper articleId={article.id} />
 				</div>
 			</article>
 		</div>

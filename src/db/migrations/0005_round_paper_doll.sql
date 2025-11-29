@@ -1,0 +1,1 @@
+ALTER TABLE "user_interests" ADD COLUMN "text" text NOT NULL;

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { scrapeRSS } from "@/actions/scrapeRSS";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ interface SavedArticle {
 }
 
 export const RSSScraperTest: React.FC = () => {
+	const t = useTranslations("scraperTest");
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [savedArticles, setSavedArticles] = useState<SavedArticle[]>([]);
 	const [error, setError] = useState<string | null>(null);
@@ -29,7 +31,7 @@ export const RSSScraperTest: React.FC = () => {
 			);
 
 			if (!result.success) {
-				setError(result.error ?? "Failed to scrape and save articles");
+				setError(result.error ?? t("error.failedToScrape"));
 				return;
 			}
 
@@ -47,9 +49,7 @@ export const RSSScraperTest: React.FC = () => {
 				setSavedArticles(articlesWithData);
 			}
 		} catch (err) {
-			setError(
-				err instanceof Error ? err.message : "An unexpected error occurred",
-			);
+			setError(err instanceof Error ? err.message : t("error.unexpectedError"));
 		} finally {
 			setIsProcessing(false);
 		}
@@ -60,11 +60,9 @@ export const RSSScraperTest: React.FC = () => {
 			<div className="max-w-5xl mx-auto px-4 py-12">
 				<div className="text-center mb-12">
 					<h1 className="text-5xl font-bold mb-4 bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-						RSS Article Scraper
+						{t("title")}
 					</h1>
-					<p className="text-lg text-gray-600">
-						Scrape and save articles from The Hacker News RSS feed
-					</p>
+					<p className="text-lg text-gray-600">{t("description")}</p>
 				</div>
 
 				<div className="flex justify-center mb-8">
@@ -77,10 +75,10 @@ export const RSSScraperTest: React.FC = () => {
 						{isProcessing ? (
 							<>
 								<div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-3" />
-								Processing...
+								{t("processing")}
 							</>
 						) : (
-							"Scrape & Save Articles"
+							t("scrapeButton")
 						)}
 					</Button>
 				</div>
@@ -95,7 +93,7 @@ export const RSSScraperTest: React.FC = () => {
 									viewBox="0 0 24 24"
 									stroke="currentColor"
 								>
-									<title>Error Icon</title>
+									<title>{t("error.iconTitle")}</title>
 									<path
 										strokeLinecap="round"
 										strokeLinejoin="round"
@@ -105,7 +103,9 @@ export const RSSScraperTest: React.FC = () => {
 								</svg>
 							</div>
 							<div className="ml-3">
-								<h3 className="text-lg font-semibold text-red-800">Error</h3>
+								<h3 className="text-lg font-semibold text-red-800">
+									{t("error.title")}
+								</h3>
 								<p className="mt-1 text-red-700">{error}</p>
 							</div>
 						</div>
@@ -118,7 +118,7 @@ export const RSSScraperTest: React.FC = () => {
 							<div className="flex items-center justify-between mb-6">
 								<div>
 									<p className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-										Total Scraped
+										{t("results.totalScraped")}
 									</p>
 									<p className="text-4xl font-bold text-gray-900">
 										{totalScraped}
@@ -126,7 +126,7 @@ export const RSSScraperTest: React.FC = () => {
 								</div>
 								<div>
 									<p className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-										Added to Database
+										{t("results.addedToDatabase")}
 									</p>
 									<p className="text-4xl font-bold bg-linear-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
 										{savedArticles.length}
@@ -134,7 +134,7 @@ export const RSSScraperTest: React.FC = () => {
 								</div>
 								<div>
 									<p className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-										Already Exists
+										{t("results.alreadyExists")}
 									</p>
 									<p className="text-4xl font-bold text-gray-400">
 										{totalScraped - savedArticles.length}
@@ -149,11 +149,16 @@ export const RSSScraperTest: React.FC = () => {
 					<div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
 						<div className="bg-linear-to-r from-blue-600 to-purple-600 px-8 py-6">
 							<h2 className="text-2xl font-bold text-white">
-								Newly Added Articles
+								{t("results.newlyAddedTitle")}
 							</h2>
 							<p className="text-blue-100 mt-1">
-								{savedArticles.length} article
-								{savedArticles.length !== 1 ? "s" : ""} successfully saved
+								{savedArticles.length === 1
+									? t("results.articlesSavedSingular", {
+											count: savedArticles.length,
+										})
+									: t("results.articlesSavedPlural", {
+											count: savedArticles.length,
+										})}
 							</p>
 						</div>
 
@@ -180,7 +185,7 @@ export const RSSScraperTest: React.FC = () => {
 													rel="noopener noreferrer"
 													className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
 												>
-													View Article →
+													{t("results.viewArticle")}
 												</a>
 												{article.publishedAt && (
 													<span>
@@ -214,7 +219,7 @@ export const RSSScraperTest: React.FC = () => {
 								viewBox="0 0 24 24"
 								stroke="currentColor"
 							>
-								<title>RSS Icon</title>
+								<title>{t("empty.rssIconTitle")}</title>
 								<path
 									strokeLinecap="round"
 									strokeLinejoin="round"
@@ -222,9 +227,7 @@ export const RSSScraperTest: React.FC = () => {
 									d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 11-2 0 1 1 0 012 0z"
 								/>
 							</svg>
-							<p className="text-xl text-gray-500">
-								Click the button above to start scraping articles
-							</p>
+							<p className="text-xl text-gray-500">{t("empty.message")}</p>
 						</div>
 					)}
 			</div>

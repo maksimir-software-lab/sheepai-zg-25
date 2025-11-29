@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 
-export default function NotFound() {
+export default async function NotFound() {
+	const t = await getTranslations("article.notFound");
 	return (
 		<div className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh]">
 			<div className="text-center space-y-6 bg-gradient-to-br from-card to-card/50 backdrop-blur-sm border border-border/50 rounded-3xl p-12 shadow-2xl">
@@ -11,7 +13,7 @@ export default function NotFound() {
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
-						aria-label="Not found"
+						aria-label={t("notFoundAriaLabel")}
 					>
 						<path
 							strokeLinecap="round"
@@ -23,11 +25,11 @@ export default function NotFound() {
 				</div>
 
 				<h1 className="text-4xl font-bold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-					Article Not Found
+					{t("title")}
 				</h1>
 
 				<p className="text-lg text-muted-foreground max-w-md mx-auto">
-					The article you're looking for doesn't exist or has been removed.
+					{t("description")}
 				</p>
 
 				<Link href="/dashboard">
@@ -40,7 +42,7 @@ export default function NotFound() {
 							fill="none"
 							viewBox="0 0 24 24"
 							stroke="currentColor"
-							aria-label="Back arrow"
+							aria-label={t("backArrowAriaLabel")}
 						>
 							<path
 								strokeLinecap="round"
@@ -49,7 +51,7 @@ export default function NotFound() {
 								d="M11 17l-5-5m0 0l5-5m-5 5h12"
 							/>
 						</svg>
-						Back to Dashboard
+						{t("backToDashboard")}
 					</Button>
 				</Link>
 			</div>

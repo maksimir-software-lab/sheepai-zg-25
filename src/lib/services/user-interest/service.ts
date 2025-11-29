@@ -29,6 +29,7 @@ export const createUserInterestService = (
 				.insert(userInterests)
 				.values({
 					userId,
+					text: interestText,
 					embedding,
 				})
 				.returning();

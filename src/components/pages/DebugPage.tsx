@@ -129,9 +129,7 @@ export const DebugPage: React.FC = () => {
 			<Card>
 				<CardHeader>
 					<CardTitle>{t("ingest.button")}</CardTitle>
-					<CardDescription>
-						Trigger article ingestion from RSS feed
-					</CardDescription>
+					<CardDescription>{t("ingest.description")}</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<Button onClick={handleIngest} disabled={ingesting}>
@@ -189,7 +187,7 @@ export const DebugPage: React.FC = () => {
 					<div className="flex items-center justify-between">
 						<div>
 							<CardTitle>{t("articles.title")}</CardTitle>
-							<CardDescription>All ingested articles</CardDescription>
+							<CardDescription>{t("articles.description")}</CardDescription>
 						</div>
 						<Button
 							variant="outline"
@@ -295,7 +293,7 @@ export const DebugPage: React.FC = () => {
 					<div className="flex items-center justify-between">
 						<div>
 							<CardTitle>{t("tags.title")}</CardTitle>
-							<CardDescription>All tags with article counts</CardDescription>
+							<CardDescription>{t("tags.description")}</CardDescription>
 						</div>
 						<Button
 							variant="outline"

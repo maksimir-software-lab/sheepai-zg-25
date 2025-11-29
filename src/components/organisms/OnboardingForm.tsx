@@ -2,7 +2,9 @@
 
 import Image, { type StaticImageData } from "next/image";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { addUserInterest } from "@/actions/user-interests";
 import nytimesLogo from "@/assets/img/nytimes.png";
 import telegramLogo from "@/assets/img/telegram.png";
 import thnLogo from "@/assets/img/thn.png";
@@ -12,41 +14,58 @@ import { Label } from "@/components/ui/label";
 
 interface Portal {
 	id: string;
-	name: string;
 	logo: string | StaticImageData;
 	isImage?: boolean;
+	translationKey: string;
 }
 
 interface Category {
 	id: string;
-	name: string;
+	translationKey: string;
 }
 
 const portals: Portal[] = [
-	{ id: "portal1", name: "The Hacker News", logo: thnLogo, isImage: true },
-	{ id: "portal2", name: "NY Times", logo: nytimesLogo, isImage: true },
-	{ id: "portal3", name: "Telegram", logo: telegramLogo, isImage: true },
+	{
+		id: "portal1",
+		logo: thnLogo,
+		isImage: true,
+		translationKey: "theHackerNews",
+	},
+	{
+		id: "portal2",
+		logo: nytimesLogo,
+		isImage: true,
+		translationKey: "nyTimes",
+	},
+	{
+		id: "portal3",
+		logo: telegramLogo,
+		isImage: true,
+		translationKey: "telegram",
+	},
 ];
 
 const categories: Category[] = [
-	{ id: "tech", name: "Technology" },
-	{ id: "business", name: "Business" },
-	{ id: "science", name: "Science" },
-	{ id: "health", name: "Health" },
-	{ id: "sports", name: "Sports" },
-	{ id: "entertainment", name: "Entertainment" },
-	{ id: "politics", name: "Politics" },
-	{ id: "environment", name: "Environment" },
-	{ id: "education", name: "Education" },
-	{ id: "finance", name: "Finance" },
+	{ id: "tech", translationKey: "technology" },
+	{ id: "business", translationKey: "business" },
+	{ id: "science", translationKey: "science" },
+	{ id: "health", translationKey: "health" },
+	{ id: "sports", translationKey: "sports" },
+	{ id: "entertainment", translationKey: "entertainment" },
+	{ id: "politics", translationKey: "politics" },
+	{ id: "environment", translationKey: "environment" },
+	{ id: "education", translationKey: "education" },
+	{ id: "finance", translationKey: "finance" },
 ];
 
 export const OnboardingForm: React.FC = () => {
+	const t = useTranslations("onboarding");
 	const router = useRouter();
 	const [step, setStep] = useState(1);
 	const [selectedPortals, setSelectedPortals] = useState<string[]>([]);
 	const [occupation, setOccupation] = useState("");
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const handlePortalToggle = (portalId: string) => {
 		setSelectedPortals((prev) => {
@@ -82,7 +101,38 @@ export const OnboardingForm: React.FC = () => {
 	};
 
 	const handleSubmit = async () => {
-		router.push("/dashboard");
+		setIsSubmitting(true);
+
+		try {
+			const interestsToSave: string[] = [];
+
+			for (const categoryId of selectedCategories) {
+				const category = categories.find((cat) => cat.id === categoryId);
+				if (category) {
+					const categoryName = t(`categories.${category.translationKey}`);
+					interestsToSave.push(
+						t("interestTemplates.categoryInterest", { category: categoryName }),
+					);
+				}
+			}
+
+			if (occupation.trim()) {
+				interestsToSave.push(
+					t("interestTemplates.occupationInterest", { occupation }),
+				);
+			}
+
+			await Promise.all(
+				interestsToSave.map((interest) => addUserInterest(interest)),
+			);
+
+			router.push("/dashboard");
+		} catch (error) {
+			console.error("Failed to save interests:", error);
+			router.push("/dashboard");
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 	const canProceedStep1 = selectedPortals.length > 0;
@@ -130,42 +180,45 @@ export const OnboardingForm: React.FC = () => {
 						{step === 1 && (
 							<div className="space-y-6">
 								<h2 className="text-2xl font-semibold mb-4">
-									Select your portals
+									{t("step1.title")}
 								</h2>
 								<div className="space-y-4">
-									{portals.map((portal) => (
-										<button
-											type="button"
-											key={portal.id}
-											className="flex items-center space-x-3 p-4 rounded-lg border-2 transition-all duration-200 hover:border-gray-300 cursor-pointer w-full text-left"
-											style={{
-												borderColor: selectedPortals.includes(portal.id)
-													? "#000"
-													: "#e5e7eb",
-											}}
-											onClick={() => handlePortalToggle(portal.id)}
-										>
-											{portal.isImage ? (
-												<div className="w-10 h-10 flex-shrink-0">
-													<Image
-														src={portal.logo as StaticImageData}
-														alt={portal.name}
-														width={40}
-														height={40}
-														className="rounded-md w-full h-full"
-														style={{ objectFit: "cover" }}
-													/>
-												</div>
-											) : (
-												<span className="text-3xl">
-													{portal.logo as string}
+									{portals.map((portal) => {
+										const portalName = t(`portals.${portal.translationKey}`);
+										return (
+											<button
+												type="button"
+												key={portal.id}
+												className="flex items-center space-x-3 p-4 rounded-lg border-2 transition-all duration-200 hover:border-gray-300 cursor-pointer w-full text-left"
+												style={{
+													borderColor: selectedPortals.includes(portal.id)
+														? "#000"
+														: "#e5e7eb",
+												}}
+												onClick={() => handlePortalToggle(portal.id)}
+											>
+												{portal.isImage ? (
+													<div className="w-10 h-10 flex-shrink-0">
+														<Image
+															src={portal.logo as StaticImageData}
+															alt={portalName}
+															width={40}
+															height={40}
+															className="rounded-md w-full h-full"
+															style={{ objectFit: "cover" }}
+														/>
+													</div>
+												) : (
+													<span className="text-3xl">
+														{portal.logo as string}
+													</span>
+												)}
+												<span className="text-lg font-medium flex-1">
+													{portalName}
 												</span>
-											)}
-											<span className="text-lg font-medium flex-1">
-												{portal.name}
-											</span>
-										</button>
-									))}
+											</button>
+										);
+									})}
 								</div>
 							</div>
 						)}
@@ -181,19 +234,19 @@ export const OnboardingForm: React.FC = () => {
 						{step === 2 && (
 							<div className="space-y-6">
 								<h2 className="text-2xl font-semibold mb-4">
-									Tell us about yourself
+									{t("step2.title")}
 								</h2>
 								<div className="space-y-4">
 									<div>
 										<Label htmlFor="occupation" className="text-lg mb-2 block">
-											What do you do for work?
+											{t("step2.occupationLabel")}
 										</Label>
 										<Input
 											id="occupation"
 											type="text"
 											value={occupation}
-											onChange={(e) => setOccupation(e.target.value)}
-											placeholder="Enter your occupation"
+											onChange={(event) => setOccupation(event.target.value)}
+											placeholder={t("step2.occupationPlaceholder")}
 											className="text-lg p-6"
 										/>
 									</div>
@@ -212,26 +265,31 @@ export const OnboardingForm: React.FC = () => {
 						{step === 3 && (
 							<div className="space-y-6">
 								<h2 className="text-2xl font-semibold mb-4">
-									Choose your interests
+									{t("step3.title")}
 								</h2>
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-									{categories.map((category) => (
-										<button
-											type="button"
-											key={category.id}
-											className="flex items-center justify-center p-4 rounded-lg border-2 transition-all duration-200 hover:border-gray-300 cursor-pointer text-left"
-											style={{
-												borderColor: selectedCategories.includes(category.id)
-													? "#000"
-													: "#e5e7eb",
-											}}
-											onClick={() => handleCategoryToggle(category.id)}
-										>
-											<span className="text-base font-medium">
-												{category.name}
-											</span>
-										</button>
-									))}
+									{categories.map((category) => {
+										const categoryName = t(
+											`categories.${category.translationKey}`,
+										);
+										return (
+											<button
+												type="button"
+												key={category.id}
+												className="flex items-center justify-center p-4 rounded-lg border-2 transition-all duration-200 hover:border-gray-300 cursor-pointer text-left"
+												style={{
+													borderColor: selectedCategories.includes(category.id)
+														? "#000"
+														: "#e5e7eb",
+												}}
+												onClick={() => handleCategoryToggle(category.id)}
+											>
+												<span className="text-base font-medium">
+													{categoryName}
+												</span>
+											</button>
+										);
+									})}
 								</div>
 							</div>
 						)}
@@ -242,10 +300,10 @@ export const OnboardingForm: React.FC = () => {
 					<Button
 						variant="outline"
 						onClick={handleBack}
-						disabled={step === 1}
+						disabled={step === 1 || isSubmitting}
 						className="px-6 py-6 text-base"
 					>
-						Back
+						{t("buttons.back")}
 					</Button>
 
 					<div className="flex gap-3">
@@ -253,9 +311,10 @@ export const OnboardingForm: React.FC = () => {
 							<Button
 								variant="ghost"
 								onClick={handleSkip}
+								disabled={isSubmitting}
 								className="px-6 py-6 text-base"
 							>
-								Skip
+								{t("buttons.skip")}
 							</Button>
 						)}
 
@@ -264,19 +323,20 @@ export const OnboardingForm: React.FC = () => {
 								onClick={handleNext}
 								disabled={
 									(step === 1 && !canProceedStep1) ||
-									(step === 2 && !canProceedStep2)
+									(step === 2 && !canProceedStep2) ||
+									isSubmitting
 								}
 								className="px-6 py-6 text-base"
 							>
-								Next
+								{t("buttons.next")}
 							</Button>
 						) : (
 							<Button
 								onClick={handleSubmit}
-								disabled={!canProceedStep3}
+								disabled={!canProceedStep3 || isSubmitting}
 								className="px-6 py-6 text-base"
 							>
-								Submit
+								{isSubmitting ? t("buttons.saving") : t("buttons.submit")}
 							</Button>
 						)}
 					</div>
