@@ -7,6 +7,10 @@ import {
 	removeArticleEngagement,
 } from "@/actions/engagement";
 
+export { useArticleInteraction } from "./use-article-interaction";
+export { useArticleScrollTracking } from "./use-article-scroll-tracking";
+export { useArticleViewTracking } from "./use-article-view-tracking";
+
 export const useArticleEngagement = (articleId: string) => {
 	const [hasLiked, setHasLiked] = useState(false);
 	const [hasDisliked, setHasDisliked] = useState(false);
