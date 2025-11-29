@@ -1,6 +1,10 @@
 import type { EmailDeps } from "./deps";
 import { buildInfobipRequestBody } from "./internal";
-import type { IEmailService, InfobipResponse, SendEmailRequest } from "./types";
+import type { InfobipResponse, SendEmailRequest } from "./types";
+
+export type IEmailService = {
+	send: (request: SendEmailRequest) => Promise<InfobipResponse>;
+};
 
 export const createEmailService = (deps: EmailDeps): IEmailService => {
 	const { config } = deps;

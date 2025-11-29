@@ -1,7 +1,13 @@
 import { inArray } from "drizzle-orm";
 import { articleTags, tags } from "@/db/schema";
 import type { TagDeps } from "./deps";
-import type { ITagService, Tag } from "./types";
+import type { Tag } from "./types";
+
+export type ITagService = {
+	normalizeSlug: (name: string) => string;
+	findOrCreateTags: (tagNames: string[]) => Promise<Tag[]>;
+	linkTagsToArticle: (articleId: string, tagIds: string[]) => Promise<void>;
+};
 
 export const createTagService = (deps: TagDeps): ITagService => {
 	const { db } = deps;

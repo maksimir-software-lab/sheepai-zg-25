@@ -1,7 +1,7 @@
 import type { db } from "@/db";
-import type { IEmbeddingService } from "@/lib/services/embedding/types";
+import type { IEmbeddingService } from "@/lib/services/embedding/service";
 import type { SimilarityProvider } from "@/lib/services/similarity/types";
-import type { IUserProfileService } from "@/lib/services/user-profile/types";
+import type { IUserProfileService } from "@/lib/services/user-profile/service";
 import type { FeedConfig } from "./config";
 
 export type FeedDeps = {

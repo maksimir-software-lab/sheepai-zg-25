@@ -29,13 +29,13 @@ import { createUserProfileService } from "./user-profile/service";
 export type { EmailConfig } from "./email/config";
 export { EMAIL_CONFIG } from "./email/config";
 export type { EmailDeps } from "./email/deps";
+export type { IEmailService as EmailProvider } from "./email/service";
 export { createEmailService } from "./email/service";
-export type { IEmailService as EmailProvider } from "./email/types";
 export type { EmbeddingConfig } from "./embedding/config";
 export { EMBEDDING_CONFIG } from "./embedding/config";
 export type { EmbeddingDeps } from "./embedding/deps";
+export type { IEmbeddingService as EmbeddingProvider } from "./embedding/service";
 export { createEmbeddingService } from "./embedding/service";
-export type { IEmbeddingService as EmbeddingProvider } from "./embedding/types";
 export type { EngagementConfig } from "./engagement/config";
 export { ENGAGEMENT_CONFIG } from "./engagement/config";
 export type { EngagementDeps } from "./engagement/deps";
@@ -64,21 +64,21 @@ export type {
 export type { LlmConfig } from "./llm/config";
 export { LLM_CONFIG } from "./llm/config";
 export type { LlmDeps } from "./llm/deps";
+export type { ILlmService as LlmProvider } from "./llm/service";
 export { createLlmService } from "./llm/service";
 export type {
 	GenerateObjectParams,
 	GenerateTextParams,
-	ILlmService as LlmProvider,
 } from "./llm/types";
 export type { PodcastConfig } from "./podcast/config";
 export { PODCAST_CONFIG } from "./podcast/config";
 export type { PodcastDeps } from "./podcast/deps";
+export type { IPodcastService as PodcastProvider } from "./podcast/service";
 export { createPodcastService } from "./podcast/service";
 export type {
 	AudioFormat,
 	GeneratePodcastParams,
 	GeneratePodcastResponse,
-	IPodcastService as PodcastProvider,
 	OpenAIVoice,
 	ScriptSegment,
 	TtsModel,
@@ -87,9 +87,9 @@ export type {
 export type { RssConfig } from "./rss/config";
 export { RSS_CONFIG } from "./rss/config";
 export type { RssDeps } from "./rss/deps";
+export type { IRssService as RssProvider } from "./rss/service";
 export { createRssService } from "./rss/service";
 export type {
-	IRssService as RssProvider,
 	RawFeedItem,
 	ScrapedArticle,
 } from "./rss/types";
@@ -107,8 +107,8 @@ export type {
 export type { StorageConfig } from "./storage/config";
 export { STORAGE_CONFIG } from "./storage/config";
 export type { StorageDeps } from "./storage/deps";
+export type { IStorageService as StorageProvider } from "./storage/service";
 export { createStorageService } from "./storage/service";
-export type { IStorageService as StorageProvider } from "./storage/types";
 export type { UserInterestConfig } from "./user-interest/config";
 export { USER_INTEREST_CONFIG } from "./user-interest/config";
 export type { UserInterestDeps } from "./user-interest/deps";
@@ -120,11 +120,9 @@ export type { UserInterest } from "./user-interest/types";
 export type { UserProfileConfig } from "./user-profile/config";
 export { USER_PROFILE_CONFIG } from "./user-profile/config";
 export type { UserProfileDeps } from "./user-profile/deps";
+export type { IUserProfileService as UserProfileProvider } from "./user-profile/service";
 export { createUserProfileService } from "./user-profile/service";
-export type {
-	IUserProfileService as UserProfileProvider,
-	UserProfile,
-} from "./user-profile/types";
+export type { UserProfile } from "./user-profile/types";
 
 type CreateServicesParams = {
 	openRouterApiKey: string;

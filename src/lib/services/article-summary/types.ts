@@ -7,7 +7,3 @@ export const articleSummarySchema = z.object({
 });
 
 export type ArticleSummary = z.infer<typeof articleSummarySchema>;
-
-export type IArticleSummaryService = {
-	generateSummary: (title: string, content: string) => Promise<ArticleSummary>;
-};

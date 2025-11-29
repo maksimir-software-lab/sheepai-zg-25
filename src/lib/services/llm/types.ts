@@ -14,10 +14,3 @@ export type GenerateObjectParams<TSchema extends z.ZodType> = {
 	temperature?: number;
 	seed?: number;
 };
-
-export type ILlmService = {
-	generateText: (params: GenerateTextParams) => Promise<string>;
-	generateObject: <TSchema extends z.ZodType>(
-		params: GenerateObjectParams<TSchema>,
-	) => Promise<z.infer<TSchema>>;
-};
