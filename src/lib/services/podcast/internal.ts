@@ -9,7 +9,7 @@ import {
 	PODCAST_SPEAKERS,
 } from "@/prompts/tasks";
 import type { ArticleForPodcast } from "../article/types";
-import type { ILlmService } from "../llm/types";
+import type { ILlmService } from "../llm/service";
 import type {
 	AudioFormat,
 	OpenAIVoice,
