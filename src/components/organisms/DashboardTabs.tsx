@@ -21,6 +21,7 @@ interface Article {
 	summary: string;
 	sourceUrl: string;
 	publishedAt: string | null;
+	relevanceScore?: number;
 }
 
 interface EngagementStatus {
@@ -158,6 +159,7 @@ export const DashboardTabs: React.FC = () => {
 				publishedAt: scoredArticle.article.publishedAt
 					? scoredArticle.article.publishedAt.toISOString()
 					: null,
+				relevanceScore: scoredArticle.scores.final,
 			}));
 
 			const articleIds = articles.map((article) => article.id);
@@ -309,7 +311,12 @@ export const DashboardTabs: React.FC = () => {
 			? forYouData
 			: exploreData;
 
-	if (currentData.isLoading || (!currentData.hasFetched && !isTagFiltering)) {
+	const shouldShowFullSkeleton =
+		(!isTagFiltering && currentData.isLoading) ||
+		(!isTagFiltering && !currentData.hasFetched);
+	const shouldShowResultsSkeleton = isTagFiltering && tagFilteredData.isLoading;
+
+	if (shouldShowFullSkeleton) {
 		return <DashboardTabsSkeleton />;
 	}
 
@@ -332,7 +339,7 @@ export const DashboardTabs: React.FC = () => {
 				{activeTab === "explore" && articleOfTheDay && !isTagFiltering && (
 					<ArticleOfTheDay article={articleOfTheDay} />
 				)}
-				{tagFilteredData.isLoading ? (
+				{shouldShowResultsSkeleton ? (
 					<DashboardTabsSkeleton />
 				) : articlesToDisplay.length === 0 &&
 					!(activeTab === "explore" && articleOfTheDay && !isTagFiltering) ? (
@@ -367,6 +374,7 @@ export const DashboardTabs: React.FC = () => {
 							article={article}
 							animationDelay={index * 60}
 							initialEngagement={currentData.engagementMap[article.id]}
+							relevanceScore={article.relevanceScore}
 						/>
 					))
 				)}
