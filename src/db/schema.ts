@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+	index,
 	integer,
 	jsonb,
 	pgEnum,
@@ -18,27 +19,45 @@ export const users = pgTable("users", {
 	updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const articles = pgTable("articles", {
-	id: serial("id").primaryKey(),
-	title: varchar("title", { length: 500 }).notNull(),
-	summary: text("summary").notNull(),
-	content: text("content").notNull(),
-	embedding: vector("embedding", { dimensions: 3072 }).notNull(),
-	sourceUrl: varchar("source_url", { length: 2048 }).notNull().unique(),
-	publishedAt: timestamp("published_at"),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+export const articles = pgTable(
+	"articles",
+	{
+		id: serial("id").primaryKey(),
+		title: varchar("title", { length: 500 }).notNull(),
+		summary: text("summary").notNull(),
+		content: text("content").notNull(),
+		embedding: vector("embedding", { dimensions: 3072 }).notNull(),
+		sourceUrl: varchar("source_url", { length: 2048 }).notNull().unique(),
+		publishedAt: timestamp("published_at"),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at").defaultNow().notNull(),
+	},
+	(table) => [
+		index("articleEmbeddingIndex").using(
+			"hnsw",
+			table.embedding.op("vector_cosine_ops"),
+		),
+	],
+);
 
-export const userInterests = pgTable("user_interests", {
-	id: serial("id").primaryKey(),
-	userId: varchar("user_id", { length: 255 })
-		.notNull()
-		.references(() => users.id, { onDelete: "cascade" }),
-	embedding: vector("embedding", { dimensions: 3072 }).notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+export const userInterests = pgTable(
+	"user_interests",
+	{
+		id: serial("id").primaryKey(),
+		userId: varchar("user_id", { length: 255 })
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		embedding: vector("embedding", { dimensions: 3072 }).notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at").defaultNow().notNull(),
+	},
+	(table) => [
+		index("userInterestEmbeddingIndex").using(
+			"hnsw",
+			table.embedding.op("vector_cosine_ops"),
+		),
+	],
+);
 
 export const engagementEventType = pgEnum("engagement_event_type", [
 	"open",
@@ -61,9 +80,30 @@ export const engagementEvents = pgTable("engagement_events", {
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const userProfiles = pgTable(
+	"user_profiles",
+	{
+		id: serial("id").primaryKey(),
+		userId: varchar("user_id", { length: 255 })
+			.notNull()
+			.unique()
+			.references(() => users.id, { onDelete: "cascade" }),
+		embedding: vector("embedding", { dimensions: 3072 }).notNull(),
+		engagementCount: integer("engagement_count").default(0).notNull(),
+		lastUpdatedAt: timestamp("last_updated_at").defaultNow().notNull(),
+	},
+	(table) => [
+		index("userProfileEmbeddingIndex").using(
+			"hnsw",
+			table.embedding.op("vector_cosine_ops"),
+		),
+	],
+);
+
+export const usersRelations = relations(users, ({ many, one }) => ({
 	interests: many(userInterests),
 	engagementEvents: many(engagementEvents),
+	profile: one(userProfiles),
 }));
 
 export const articlesRelations = relations(articles, ({ many }) => ({
@@ -90,3 +130,10 @@ export const engagementEventsRelations = relations(
 		}),
 	}),
 );
+
+export const userProfilesRelations = relations(userProfiles, ({ one }) => ({
+	user: one(users, {
+		fields: [userProfiles.userId],
+		references: [users.id],
+	}),
+}));
