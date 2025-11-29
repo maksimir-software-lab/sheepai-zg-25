@@ -1,15 +1,19 @@
-export { addAudio, deleteAudio, getAudio, updateAudio } from "./audio/audio";
-export { addFile, deleteFile, getFile, updateFile } from "./file/file";
-export { addImage, deleteImage, getImage, updateImage } from "./image/image";
+export type { StorageConfig } from "./config";
+export { STORAGE_CONFIG } from "./config";
+export type { StorageDeps } from "./deps";
+export { createStorageService } from "./service";
+export type {
+	AddResponse,
+	DeleteResponse,
+	GetResponse,
+	IStorageService,
+	StorageBucket,
+	UpdateResponse,
+} from "./types";
 export {
-	type AddResponse,
 	addResponseSchema,
-	type DeleteResponse,
 	deleteResponseSchema,
-	type GetResponse,
 	getResponseSchema,
-	type StorageBucket,
 	storageBucketSchema,
-	type UpdateResponse,
 	updateResponseSchema,
 } from "./types";

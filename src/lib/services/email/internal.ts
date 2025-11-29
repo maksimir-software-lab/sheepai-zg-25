@@ -5,26 +5,14 @@ import type {
 	InfobipDestination,
 	InfobipMessage,
 	InfobipRequestBody,
-	InfobipResponse,
 	SendEmailRequest,
 } from "./types";
 
-const infobipApiKey = process.env.INFOBIP_API_KEY;
-const infobipBaseUrl = process.env.INFOBIP_BASE_URL;
-
-if (!infobipApiKey) {
-	throw new Error("INFOBIP_API_KEY environment variable is not defined");
-}
-
-if (!infobipBaseUrl) {
-	throw new Error("INFOBIP_BASE_URL environment variable is not defined");
-}
-
-const bufferToBase64 = (buffer: Buffer): string => {
+export const bufferToBase64 = (buffer: Buffer): string => {
 	return buffer.toString("base64");
 };
 
-const mapAttachmentToInfobipFormat = (
+export const mapAttachmentToInfobipFormat = (
 	attachment: EmailAttachment,
 ): Attachment => ({
 	type: "binary",
@@ -33,14 +21,14 @@ const mapAttachmentToInfobipFormat = (
 	fileName: attachment.fileName,
 });
 
-const mapRecipientToInfobipFormat = (
+export const mapRecipientToInfobipFormat = (
 	recipient: EmailRecipient,
 ): { destination: string; name?: string } => ({
 	destination: recipient.email,
 	...(recipient.name && { name: recipient.name }),
 });
 
-const buildInfobipRequestBody = (
+export const buildInfobipRequestBody = (
 	request: SendEmailRequest,
 ): InfobipRequestBody => {
 	const attachments = request.attachments?.map((attachment) =>
@@ -68,31 +56,4 @@ const buildInfobipRequestBody = (
 	};
 
 	return { messages: [message] };
-};
-
-export const sendEmail = async (
-	request: SendEmailRequest,
-): Promise<InfobipResponse> => {
-	const requestBody = buildInfobipRequestBody(request);
-
-	const response = await fetch(`${infobipBaseUrl}/email/4/messages`, {
-		method: "POST",
-		headers: {
-			Authorization: `App ${infobipApiKey}`,
-			"Content-Type": "application/json",
-			Accept: "application/json",
-		},
-		body: JSON.stringify(requestBody),
-	});
-
-	if (!response.ok) {
-		const errorText = await response.text();
-		throw new Error(
-			`Failed to send email: ${response.status} ${response.statusText} - ${errorText}`,
-		);
-	}
-
-	const responseData = (await response.json()) as InfobipResponse;
-
-	return responseData;
 };
