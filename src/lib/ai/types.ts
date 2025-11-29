@@ -1,11 +1,13 @@
-import type { z } from "zod";
+import { z } from "zod";
 
-export type GenerateTextRequest = {
-	model: string;
-	prompt: string;
-	temperature?: number;
-	seed?: number;
-};
+export const generateTextRequestSchema = z.object({
+	model: z.string(),
+	prompt: z.string(),
+	temperature: z.number().optional(),
+	seed: z.number().optional(),
+});
+
+export type GenerateTextRequest = z.infer<typeof generateTextRequestSchema>;
 
 export type GenerateTextResponse = Promise<string>;
 
