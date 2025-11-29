@@ -20,11 +20,16 @@ jobs:
       run: |
         touch .env
         echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
-        echo NEXT_PUBLIC_CLERK_SIGN_UP_URL=${{ secrets.NEXT_PUBLIC_CLERK_SIGN_UP_URL }} >> .env
-        echo NEXT_PUBLIC_CLERK_SIGN_IN_URL=${{ secrets.NEXT_PUBLIC_CLERK_SIGN_IN_URL }} >> .env
+        echo DATABASE_URL_MAIN=${{ secrets.DATABASE_URL_MAIN }} >> .env
         echo NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }} >> .env
         echo CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }} >> .env
+        echo NEXT_PUBLIC_AUTH_DISABLED=${{ secrets.NEXT_PUBLIC_AUTH_DISABLED }} >> .env
         echo OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }} >> .env
+        echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
+        echo INFOBIP_API_KEY=${{ secrets.INFOBIP_API_KEY }} >> .env
+        echo INFOBIP_BASE_URL=${{ secrets.INFOBIP_BASE_URL }} >> .env
+        echo NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} >> .env
+        echo NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }} >> .env
         docker build -t sheepai:latest .
         docker save sheepai:latest | gzip > image.tar.gz
     
