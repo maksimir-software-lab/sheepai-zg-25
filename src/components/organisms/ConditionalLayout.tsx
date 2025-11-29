@@ -20,7 +20,7 @@ export const ConditionalLayout: React.FC<{ children: React.ReactNode }> = ({
 			<AppSidebar />
 			<SidebarInset>
 				<Header />
-				<main>{children}</main>
+				<main className="p-8">{children}</main>
 			</SidebarInset>
 		</SidebarProvider>
 	);
