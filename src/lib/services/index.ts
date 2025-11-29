@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
 import { db } from "@/db";
 import { createArticleService } from "./article/service";
+import { createArticleTldrService } from "./article-tldr/service";
 import { EMAIL_CONFIG } from "./email/config";
 import { createEmailService } from "./email/service";
 import { EMBEDDING_CONFIG } from "./embedding/config";
@@ -36,6 +37,15 @@ export type {
 	ArticleForPodcast,
 	IArticleService as ArticleProvider,
 } from "./article/types";
+export type { ArticleTldrDeps } from "./article-tldr/deps";
+export { createArticleTldrService } from "./article-tldr/service";
+export type {
+	ArticleTldr,
+	ArticleTldrRecord,
+	GetOrCreateTldrParams,
+	GetOrCreateTldrResult,
+	IArticleTldrService as ArticleTldrProvider,
+} from "./article-tldr/types";
 export type { EmailConfig } from "./email/config";
 export { EMAIL_CONFIG } from "./email/config";
 export type { EmailDeps } from "./email/deps";
@@ -239,6 +249,11 @@ export const createServices = (params: CreateServicesParams) => {
 		config: USER_INTEREST_CONFIG,
 	});
 
+	const articleTldrService = createArticleTldrService({
+		db,
+		llmService,
+	});
+
 	const popularityService = createPopularityService({
 		db,
 		config: POPULARITY_CONFIG,
@@ -266,6 +281,7 @@ export const createServices = (params: CreateServicesParams) => {
 		podcast: podcastService,
 		article: articleService,
 		userInterest: userInterestService,
+		articleTldr: articleTldrService,
 		userProfile: userProfileService,
 	};
 };
