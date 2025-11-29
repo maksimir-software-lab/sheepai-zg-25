@@ -15,6 +15,8 @@ import { LLM_CONFIG } from "./llm/config";
 import { createLlmService } from "./llm/service";
 import { PODCAST_CONFIG } from "./podcast/config";
 import { createPodcastService } from "./podcast/service";
+import { POPULARITY_CONFIG } from "./popularity/config";
+import { createPopularityService } from "./popularity/service";
 import { RSS_CONFIG } from "./rss/config";
 import { createRssService } from "./rss/service";
 import { SIMILARITY_CONFIG } from "./similarity/config";
@@ -57,8 +59,10 @@ export {
 } from "./feed/service";
 export type {
 	Article,
+	ArticleScores,
 	FeedArticle,
 	FeedOptions,
+	ScoredArticle,
 	SearchOptions,
 } from "./feed/types";
 export type { LlmConfig } from "./llm/config";
@@ -84,6 +88,17 @@ export type {
 	TtsModel,
 	VoiceMapping,
 } from "./podcast/types";
+export type { PopularityConfig } from "./popularity/config";
+export { POPULARITY_CONFIG } from "./popularity/config";
+export type { PopularityDeps } from "./popularity/deps";
+export {
+	createPopularityService,
+	type IPopularityService as PopularityProvider,
+} from "./popularity/service";
+export type {
+	ArticlePopularityStats,
+	PopularityOptions,
+} from "./popularity/types";
 export type { RssConfig } from "./rss/config";
 export { RSS_CONFIG } from "./rss/config";
 export type { RssDeps } from "./rss/deps";
@@ -210,11 +225,17 @@ export const createServices = (params: CreateServicesParams) => {
 		config: USER_INTEREST_CONFIG,
 	});
 
+	const popularityService = createPopularityService({
+		db,
+		config: POPULARITY_CONFIG,
+	});
+
 	const feedService = createFeedService({
 		db,
 		similarityService,
 		embeddingService,
 		userProfileService,
+		popularityService,
 		config: FEED_CONFIG,
 	});
 
@@ -224,6 +245,7 @@ export const createServices = (params: CreateServicesParams) => {
 		engagement: engagementService,
 		feed: feedService,
 		llm: llmService,
+		popularity: popularityService,
 		rss: rssService,
 		similarity: similarityService,
 		storage: storageService,

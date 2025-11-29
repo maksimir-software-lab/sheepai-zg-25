@@ -2,14 +2,14 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { getPersonalizedFeed, getRecentFeed } from "@/actions/feed";
-import type { FeedArticle, FeedOptions } from "@/lib/services";
+import type { FeedOptions, ScoredArticle } from "@/lib/services";
 
 type UseArticleFeedOptions = FeedOptions & {
 	personalized?: boolean;
 };
 
 export const useArticleFeed = (options?: UseArticleFeedOptions) => {
-	const [articles, setArticles] = useState<FeedArticle[]>([]);
+	const [articles, setArticles] = useState<ScoredArticle[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
@@ -26,7 +26,13 @@ export const useArticleFeed = (options?: UseArticleFeedOptions) => {
 				setArticles(
 					result.map((article) => ({
 						article,
-						similarity: 0,
+						scores: {
+							similarity: 0,
+							recency: 0,
+							popularity: 0,
+							exploration: 0,
+							final: 0,
+						},
 					})),
 				);
 			} else {
