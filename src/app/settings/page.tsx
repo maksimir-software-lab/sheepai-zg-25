@@ -1,5 +1,7 @@
 import { getTranslations } from "next-intl/server";
+import { AccountSection } from "@/components/organisms/AccountSection";
 import { InterestsManager } from "@/components/organisms/InterestsManager";
+import { RetriggerOnboarding } from "@/components/organisms/RetriggerOnboarding";
 
 export default async function Page() {
 	const t = await getTranslations("settings");
@@ -12,7 +14,11 @@ export default async function Page() {
 					<p className="text-lg text-muted-foreground">{t("description")}</p>
 				</div>
 
+				<AccountSection />
+
 				<InterestsManager />
+
+				<RetriggerOnboarding />
 			</div>
 		</div>
 	);

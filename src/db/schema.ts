@@ -48,24 +48,35 @@ export const tags = pgTable("tags", {
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const articleTags = pgTable("article_tags", {
-	articleId: uuid("article_id")
-		.notNull()
-		.references(() => articles.id, { onDelete: "cascade" }),
-	tagId: uuid("tag_id")
-		.notNull()
-		.references(() => tags.id, { onDelete: "cascade" }),
-});
+export const articleTags = pgTable(
+	"article_tags",
+	{
+		articleId: uuid("article_id")
+			.notNull()
+			.references(() => articles.id, { onDelete: "cascade" }),
+		tagId: uuid("tag_id")
+			.notNull()
+			.references(() => tags.id, { onDelete: "cascade" }),
+	},
+	(table) => [
+		index("articleTagsArticleIdIdx").on(table.articleId),
+		index("articleTagsTagIdIdx").on(table.tagId),
+	],
+);
 
-export const userTagInterests = pgTable("user_tag_interests", {
-	userId: varchar("user_id", { length: 255 })
-		.notNull()
-		.references(() => users.id, { onDelete: "cascade" }),
-	tagId: uuid("tag_id")
-		.notNull()
-		.references(() => tags.id, { onDelete: "cascade" }),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+export const userTagInterests = pgTable(
+	"user_tag_interests",
+	{
+		userId: varchar("user_id", { length: 255 })
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		tagId: uuid("tag_id")
+			.notNull()
+			.references(() => tags.id, { onDelete: "cascade" }),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(table) => [index("userTagInterestsUserIdIdx").on(table.userId)],
+);
 
 export const userInterests = pgTable(
 	"user_interests",
@@ -84,6 +95,7 @@ export const userInterests = pgTable(
 			"hnsw",
 			table.embedding.op("vector_cosine_ops"),
 		),
+		index("userInterestsUserIdIdx").on(table.userId),
 	],
 );
 
@@ -95,18 +107,27 @@ export const engagementEventType = pgEnum("engagement_event_type", [
 	"scroll",
 ]);
 
-export const engagementEvents = pgTable("engagement_events", {
-	id: uuid("id").primaryKey().defaultRandom(),
-	userId: varchar("user_id", { length: 255 })
-		.notNull()
-		.references(() => users.id, { onDelete: "cascade" }),
-	articleId: uuid("article_id")
-		.notNull()
-		.references(() => articles.id, { onDelete: "cascade" }),
-	eventType: engagementEventType("event_type").notNull(),
-	metadata: jsonb("metadata"),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+export const engagementEvents = pgTable(
+	"engagement_events",
+	{
+		id: uuid("id").primaryKey().defaultRandom(),
+		userId: varchar("user_id", { length: 255 })
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		articleId: uuid("article_id")
+			.notNull()
+			.references(() => articles.id, { onDelete: "cascade" }),
+		eventType: engagementEventType("event_type").notNull(),
+		metadata: jsonb("metadata"),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(table) => [
+		index("engagementEventsUserIdIdx").on(table.userId),
+		index("engagementEventsArticleIdIdx").on(table.articleId),
+		index("engagementEventsUserArticleIdx").on(table.userId, table.articleId),
+		index("engagementEventsCreatedAtIdx").on(table.createdAt),
+	],
+);
 
 export const userProfiles = pgTable(
 	"user_profiles",
@@ -198,20 +219,26 @@ export const userProfilesRelations = relations(userProfiles, ({ one }) => ({
 	}),
 }));
 
-export const articleTldrs = pgTable("article_tldrs", {
-	id: uuid("id").primaryKey().defaultRandom(),
-	articleId: uuid("article_id")
-		.notNull()
-		.references(() => articles.id, { onDelete: "cascade" }),
-	userId: varchar("user_id", { length: 255 }).references(() => users.id, {
-		onDelete: "cascade",
-	}),
-	tldr: jsonb("tldr")
-		.$type<{ summary: string; relevance: string | null }>()
-		.notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+export const articleTldrs = pgTable(
+	"article_tldrs",
+	{
+		id: uuid("id").primaryKey().defaultRandom(),
+		articleId: uuid("article_id")
+			.notNull()
+			.references(() => articles.id, { onDelete: "cascade" }),
+		userId: varchar("user_id", { length: 255 }).references(() => users.id, {
+			onDelete: "cascade",
+		}),
+		tldr: jsonb("tldr")
+			.$type<{ summary: string; relevance: string | null }>()
+			.notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at").defaultNow().notNull(),
+	},
+	(table) => [
+		index("articleTldrsArticleUserIdx").on(table.articleId, table.userId),
+	],
+);
 
 export const articleTldrsRelations = relations(articleTldrs, ({ one }) => ({
 	article: one(articles, {

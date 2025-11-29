@@ -38,6 +38,10 @@
 		"userMenu": {
 			"connectedAccounts": "Connected Accounts",
 			"signOut": "Sign Out"
+		},
+		"providers": {
+			"google": "Google",
+			"github": "GitHub"
 		}
 	},
 	"debug": {
@@ -107,6 +111,13 @@
 	"settings": {
 		"title": "Settings",
 		"description": "Manage your account settings and preferences",
+		"account": {
+			"title": "Account",
+			"connectedAccounts": "Connected Accounts",
+			"signOut": "Sign Out",
+			"notSignedIn": "Not signed in",
+			"signIn": "Sign In"
+		},
 		"interests": {
 			"title": "Your Interests",
 			"description": "These interests help personalize your news feed. Add or remove interests to improve recommendations.",
@@ -115,6 +126,16 @@
 			"noInterests": "No interests added yet. Add some interests to personalize your feed!",
 			"loading": "Loading interests...",
 			"remove": "Remove interest"
+		},
+		"retriggerOnboarding": {
+			"title": "Restart Onboarding",
+			"description": "Clear all your interests and restart the onboarding process to reconfigure your preferences.",
+			"button": "Restart Onboarding",
+			"confirmTitle": "Restart Onboarding",
+			"confirmMessage": "This will clear all your current interests and redirect you to the onboarding flow. Are you sure you want to continue?",
+			"cancel": "Cancel",
+			"confirm": "Restart",
+			"clearing": "Clearing..."
 		}
 	},
 	"onboarding": {
@@ -123,8 +144,8 @@
 		},
 		"step2": {
 			"title": "Tell us about yourself",
-			"occupationLabel": "What do you do for work?",
-			"occupationPlaceholder": "Enter your occupation"
+			"aboutYouLabel": "Who are you?",
+			"aboutYouPlaceholder": "Tell us about yourself"
 		},
 		"step3": {
 			"title": "Choose your interests"
@@ -155,7 +176,7 @@
 		},
 		"interestTemplates": {
 			"categoryInterest": "I am interested in {category} news",
-			"occupationInterest": "I work as a {occupation} and want relevant professional news"
+			"aboutYouInterest": "I am {aboutYou} and want relevant news"
 		}
 	},
 	"article": {
@@ -165,7 +186,7 @@
 			"dislikeAriaLabel": "Dislike article"
 		},
 		"card": {
-			"readFullArticle": "Read Full Article",
+			"readFullArticle": "Read",
 			"clockAriaLabel": "Clock",
 			"likeAriaLabel": "Like article",
 			"dislikeAriaLabel": "Dislike article"
@@ -192,6 +213,10 @@
 			"noArticles": "No articles yet",
 			"noArticlesDescription": "Check back later for new content",
 			"noArticlesAriaLabel": "No articles"
+		},
+		"tagSearch": {
+			"filterByTags": "Filter by tags",
+			"clearFilters": "Clear filters"
 		}
 	},
 	"navigation": {
@@ -201,8 +226,8 @@
 			"settings": "Settings"
 		}
 	},
-	"hackOfTheDay": {
-		"label": "Hack of the Day",
+	"articleOfTheDay": {
+		"label": "Article of the Day",
 		"starAriaLabel": "Star"
 	},
 	"scraperTest": {

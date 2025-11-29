@@ -13,3 +13,5 @@ export type ArticleEngagementStatus = {
 	hasLiked: boolean;
 	hasDisliked: boolean;
 };
+
+export type BatchArticleEngagementMap = Record<string, ArticleEngagementStatus>;

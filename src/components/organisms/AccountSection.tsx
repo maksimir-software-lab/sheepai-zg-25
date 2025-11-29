@@ -1,70 +1,72 @@
 "use client";
 
-import { useClerk, useUser } from "@clerk/nextjs";
+import { SignedIn, SignedOut, useClerk, useUser } from "@clerk/nextjs";
 import { LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-export const UserMenu: React.FC = () => {
+const isAuthDisabled = process.env.NEXT_PUBLIC_AUTH_DISABLED === "true";
+
+export const AccountSection: React.FC = () => {
 	const { user } = useUser();
 	const { signOut } = useClerk();
-	const t = useTranslations("auth");
+	const router = useRouter();
+	const t = useTranslations("settings.account");
 	const tProviders = useTranslations("auth.providers");
 
-	if (!user) return null;
+	if (isAuthDisabled) {
+		return null;
+	}
 
 	const userEmail =
-		user.primaryEmailAddress?.emailAddress ||
-		user.emailAddresses[0]?.emailAddress;
-	const userName = user.fullName || user.username || userEmail;
+		user?.primaryEmailAddress?.emailAddress ||
+		user?.emailAddresses[0]?.emailAddress;
+	const userName = user?.fullName || user?.username || userEmail;
 	const userInitials =
-		user.firstName && user.lastName
+		user?.firstName && user?.lastName
 			? `${user.firstName[0]}${user.lastName[0]}`
 			: userName?.[0]?.toUpperCase() || "U";
 
 	return (
-		<Popover>
-			<PopoverTrigger asChild>
-				<button
-					type="button"
-					className="size-9 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center font-medium text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:cursor-pointer"
-				>
-					{userInitials}
-				</button>
-			</PopoverTrigger>
-			<PopoverContent className="w-64 p-0" align="end" sideOffset={8}>
-				<div className="flex flex-col">
-					<div className="flex items-center gap-2.5 p-3">
-						<div className="size-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-base font-semibold shrink-0">
+		<Card>
+			<CardHeader>
+				<CardTitle>{t("title")}</CardTitle>
+			</CardHeader>
+			<CardContent className="space-y-4">
+				<SignedOut>
+					<div className="flex flex-col items-center gap-4 py-4">
+						<p className="text-muted-foreground">{t("notSignedIn")}</p>
+						<Button onClick={() => router.push("/login")}>{t("signIn")}</Button>
+					</div>
+				</SignedOut>
+				<SignedIn>
+					<div className="flex items-center gap-3">
+						<div className="size-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-lg font-semibold shrink-0">
 							{userInitials}
 						</div>
 						<div className="flex-1 min-w-0">
-							<p className="font-semibold text-sm truncate">{userName}</p>
-							<p className="text-xs text-muted-foreground truncate">
+							<p className="font-semibold truncate">{userName}</p>
+							<p className="text-sm text-muted-foreground truncate">
 								{userEmail}
 							</p>
 						</div>
 					</div>
 
-					<Separator />
-
-					{user.externalAccounts.length > 0 && (
+					{user?.externalAccounts && user.externalAccounts.length > 0 && (
 						<>
-							<div className="p-3 space-y-2">
+							<Separator />
+							<div className="space-y-2">
 								<p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-									{t("userMenu.connectedAccounts")}
+									{t("connectedAccounts")}
 								</p>
-								<div className="space-y-1.5">
+								<div className="flex flex-wrap gap-2">
 									{user.externalAccounts.map((account) => (
 										<div
 											key={account.id}
-											className="flex items-center gap-2 rounded-lg border bg-card px-2.5 py-1.5 text-card-foreground"
+											className="flex items-center gap-2 rounded-lg border bg-card px-3 py-2 text-card-foreground"
 										>
 											<div className="size-4 flex items-center justify-center shrink-0">
 												{account.provider === "google" && (
@@ -104,30 +106,29 @@ export const UserMenu: React.FC = () => {
 													</svg>
 												)}
 											</div>
-											<span className="text-xs font-medium capitalize">
+											<span className="text-sm font-medium capitalize">
 												{tProviders(account.provider as "google" | "github")}
 											</span>
 										</div>
 									))}
 								</div>
 							</div>
-							<Separator />
 						</>
 					)}
 
-					<div className="p-1.5">
-						<Button
-							type="button"
-							variant="ghost"
-							onClick={() => signOut()}
-							className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
-						>
-							<LogOut className="size-4" />
-							{t("userMenu.signOut")}
-						</Button>
-					</div>
-				</div>
-			</PopoverContent>
-		</Popover>
+					<Separator />
+
+					<Button
+						type="button"
+						variant="outline"
+						onClick={() => signOut()}
+						className="w-full text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30"
+					>
+						<LogOut className="size-4" />
+						{t("signOut")}
+					</Button>
+				</SignedIn>
+			</CardContent>
+		</Card>
 	);
 };

@@ -1,8 +1,10 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 import { AppSidebar } from "@/components/organisms/AppSidebar";
 import { Header } from "@/components/organisms/Header";
+import { MobileHeader } from "@/components/organisms/MobileHeader";
 import { MobileNavigation } from "@/components/organisms/MobileNavigation";
 import { UserInit } from "@/components/organisms/UserInit";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -36,8 +38,11 @@ export const ConditionalLayout: React.FC<{ children: React.ReactNode }> = ({
 				<AppSidebar />
 				<SidebarInset>
 					<Header />
+					<MobileHeader />
 					<main className="p-8 pb-20 md:pb-8">{children}</main>
-					<MobileNavigation />
+					<Suspense fallback={null}>
+						<MobileNavigation />
+					</Suspense>
 				</SidebarInset>
 			</SidebarProvider>
 		);
@@ -49,8 +54,11 @@ export const ConditionalLayout: React.FC<{ children: React.ReactNode }> = ({
 			<AppSidebar />
 			<SidebarInset>
 				<Header />
+				<MobileHeader />
 				<main className="p-8 pb-20 md:pb-8">{children}</main>
-				<MobileNavigation />
+				<Suspense fallback={null}>
+					<MobileNavigation />
+				</Suspense>
 			</SidebarInset>
 		</SidebarProvider>
 	);

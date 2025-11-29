@@ -7,6 +7,7 @@ export type IUserInterestService = {
 	addInterest: (userId: string, interestText: string) => Promise<UserInterest>;
 	removeInterest: (userId: string, interestId: string) => Promise<void>;
 	getInterests: (userId: string) => Promise<UserInterest[]>;
+	clearAllInterests: (userId: string) => Promise<void>;
 };
 
 export const createUserInterestService = (
@@ -60,9 +61,14 @@ export const createUserInterestService = (
 			.where(eq(userInterests.userId, userId));
 	};
 
+	const clearAllInterests = async (userId: string): Promise<void> => {
+		await db.delete(userInterests).where(eq(userInterests.userId, userId));
+	};
+
 	return {
 		addInterest,
 		removeInterest,
 		getInterests,
+		clearAllInterests,
 	};
 };

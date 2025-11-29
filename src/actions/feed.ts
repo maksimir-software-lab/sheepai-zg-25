@@ -24,3 +24,11 @@ export const searchArticles = async (
 ) => {
 	return services.feed.searchArticles(query, options);
 };
+
+export const getAllTags = async () => {
+	return services.tag.getAllTags();
+};
+
+export const getArticlesByTags = async (tagSlugs: string[], limit?: number) => {
+	return services.tag.getArticlesByTags(tagSlugs, limit);
+};

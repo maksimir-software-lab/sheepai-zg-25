@@ -1,8 +1,9 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { engagementEvents } from "@/db/schema";
 import type { EngagementDeps } from "./deps";
 import type {
 	ArticleEngagementStatus,
+	BatchArticleEngagementMap,
 	EngagementEvent,
 	EngagementEventType,
 } from "./types";
@@ -23,6 +24,10 @@ export type IEngagementService = {
 		userId: string,
 		articleId: string,
 	) => Promise<ArticleEngagementStatus>;
+	getBatchArticleEngagement: (
+		userId: string,
+		articleIds: string[],
+	) => Promise<BatchArticleEngagementMap>;
 	getEngagementsForArticle: (
 		userId: string,
 		articleId: string,
@@ -137,6 +142,41 @@ export const createEngagementService = (
 		return { hasLiked, hasDisliked };
 	};
 
+	const getBatchArticleEngagement = async (
+		userId: string,
+		articleIds: string[],
+	): Promise<BatchArticleEngagementMap> => {
+		if (articleIds.length === 0) {
+			return {};
+		}
+
+		const engagements = await db
+			.select()
+			.from(engagementEvents)
+			.where(
+				and(
+					eq(engagementEvents.userId, userId),
+					inArray(engagementEvents.articleId, articleIds),
+				),
+			);
+
+		const engagementMap: BatchArticleEngagementMap = {};
+
+		for (const articleId of articleIds) {
+			engagementMap[articleId] = { hasLiked: false, hasDisliked: false };
+		}
+
+		for (const engagement of engagements) {
+			if (engagement.eventType === "like") {
+				engagementMap[engagement.articleId].hasLiked = true;
+			} else if (engagement.eventType === "dislike") {
+				engagementMap[engagement.articleId].hasDisliked = true;
+			}
+		}
+
+		return engagementMap;
+	};
+
 	const getEngagementsForArticle = async (
 		userId: string,
 		articleId: string,
@@ -156,6 +196,7 @@ export const createEngagementService = (
 		recordEngagement,
 		removeEngagement,
 		getArticleEngagement,
+		getBatchArticleEngagement,
 		getEngagementsForArticle,
 	};
 };
