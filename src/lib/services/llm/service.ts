@@ -16,6 +16,7 @@ export const createLlmService = (deps: LlmDeps): ILlmService => {
 		const response = await generateText({
 			model: openRouterAiSdk(params.model ?? config.defaultModel),
 			prompt: params.prompt,
+			maxOutputTokens: 8192,
 			temperature: params.temperature ?? config.defaultTemperature,
 			seed: params.seed,
 		});
@@ -30,6 +31,7 @@ export const createLlmService = (deps: LlmDeps): ILlmService => {
 			model: openRouterAiSdk(params.model ?? config.defaultModel),
 			schema: params.schema,
 			prompt: params.prompt,
+			maxOutputTokens: 8192,
 			temperature: params.temperature ?? config.defaultTemperature,
 			seed: params.seed,
 		});
