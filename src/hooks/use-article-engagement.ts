@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	getArticleEngagement,
 	recordArticleEngagement,
@@ -61,11 +61,14 @@ export const useArticleEngagement = (articleId: string) => {
 		setHasDisliked(true);
 	}, [articleId, hasLiked, hasDisliked]);
 
-	return {
-		like,
-		dislike,
-		hasLiked,
-		hasDisliked,
-		isLoading,
-	};
+	return useMemo(
+		() => ({
+			like,
+			dislike,
+			hasLiked,
+			hasDisliked,
+			isLoading,
+		}),
+		[like, dislike, hasLiked, hasDisliked, isLoading],
+	);
 };
