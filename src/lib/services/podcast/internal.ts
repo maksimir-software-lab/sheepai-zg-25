@@ -1,7 +1,24 @@
-import { FFmpeg } from "@ffmpeg/ffmpeg";
-import { toBlobURL } from "@ffmpeg/util";
 import type OpenAI from "openai";
-import type { AudioFormat, OpenAIVoice, TtsModel } from "./types";
+import { z } from "zod";
+import {
+	makeNewsBroadcastSystemPrompt,
+	makeNewsBroadcastUserPrompt,
+	makePodcastSystemPrompt,
+	makePodcastUserPrompt,
+	NEWS_BROADCAST_SPEAKERS,
+	PODCAST_SPEAKERS,
+} from "@/prompts/tasks";
+import type { ArticleForPodcast } from "../article/types";
+import type { ILlmService } from "../llm/types";
+import type {
+	AudioFormat,
+	OpenAIVoice,
+	PodcastFormat,
+	ScriptSegment,
+	TtsModel,
+	VoiceMapping,
+} from "./types";
+import { scriptSegmentSchema } from "./types";
 
 export type IndexedAudioBuffer = {
 	index: number;
@@ -34,59 +51,93 @@ export const generateSegmentAudio = async (
 	};
 };
 
+const WAV_HEADER_SIZE_IN_BYTES = 44;
+
+const updateWavHeader = (header: Buffer, totalDataSize: number): Buffer => {
+	const updatedHeader = Buffer.from(header);
+	updatedHeader.writeUInt32LE(totalDataSize + 36, 4);
+	updatedHeader.writeUInt32LE(totalDataSize, 40);
+
+	return updatedHeader;
+};
+
 export const concatenateAudioBuffers = async (
 	indexedBuffers: IndexedAudioBuffer[],
-	format: AudioFormat,
+	_format: AudioFormat,
 ): Promise<Buffer> => {
-	const sortedBuffers = indexedBuffers.sort((a, b) => a.index - b.index);
+	const sortedBuffers = indexedBuffers.sort(
+		(bufferA, bufferB) => bufferA.index - bufferB.index,
+	);
 
-	const ffmpeg = new FFmpeg();
-	const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm";
+	const firstBuffer = sortedBuffers.at(0);
 
-	await ffmpeg.load({
-		coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
-		wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
-	});
-
-	const inputFiles: string[] = [];
-	for (let i = 0; i < sortedBuffers.length; i++) {
-		const filename = `input_${i}.${format}`;
-		await ffmpeg.writeFile(filename, sortedBuffers[i].buffer);
-		inputFiles.push(filename);
+	if (!firstBuffer) {
+		throw new Error("No audio buffers to concatenate");
 	}
 
-	const concatList = inputFiles.map((file) => `file '${file}'`).join("\n");
-	await ffmpeg.writeFile("concat.txt", concatList);
+	const header = firstBuffer.buffer.subarray(0, WAV_HEADER_SIZE_IN_BYTES);
 
-	const outputFile = `output.${format}`;
-	const args = [
-		"-f",
-		"concat",
-		"-safe",
-		"0",
-		"-i",
-		"concat.txt",
-		"-c",
-		"copy",
-		outputFile,
-	];
+	const audioDataBuffers = sortedBuffers.map((indexedBuffer) =>
+		indexedBuffer.buffer.subarray(WAV_HEADER_SIZE_IN_BYTES),
+	);
 
-	await ffmpeg.exec(args);
+	const totalDataSize = audioDataBuffers.reduce(
+		(sum, audioBuffer) => sum + audioBuffer.length,
+		0,
+	);
 
-	const outputData = await ffmpeg.readFile(outputFile);
-	const outputBuffer = Buffer.from(outputData);
+	const updatedHeader = updateWavHeader(header, totalDataSize);
 
-	for (const file of [...inputFiles, "concat.txt", outputFile]) {
-		try {
-			await ffmpeg.deleteFile(file);
-		} catch {}
-	}
-
-	return outputBuffer;
+	return Buffer.concat([updatedHeader, ...audioDataBuffers]);
 };
 
 export const generateUniqueFilename = (format: AudioFormat): string => {
 	const timestamp = Date.now();
 	const random = crypto.randomUUID();
+
 	return `podcast_${timestamp}_${random}.${format}`;
+};
+
+const scriptResponseSchema = z.object({
+	segments: z.array(scriptSegmentSchema),
+});
+
+export const generateScriptFromArticles = async (
+	llmService: ILlmService,
+	articlesData: ArticleForPodcast[],
+	format: PodcastFormat,
+): Promise<ScriptSegment[]> => {
+	const systemPrompt =
+		format === "podcast"
+			? makePodcastSystemPrompt()
+			: makeNewsBroadcastSystemPrompt();
+
+	const userPrompt =
+		format === "podcast"
+			? makePodcastUserPrompt({ articles: articlesData })
+			: makeNewsBroadcastUserPrompt({ articles: articlesData });
+
+	const fullPrompt = `${systemPrompt}\n\n${userPrompt}`;
+
+	const response = await llmService.generateObject({
+		prompt: fullPrompt,
+		schema: scriptResponseSchema,
+	});
+
+	return response.segments;
+};
+
+export const getVoiceMappingForFormat = (
+	format: PodcastFormat,
+): VoiceMapping => {
+	if (format === "podcast") {
+		return {
+			[PODCAST_SPEAKERS.hostA]: "nova",
+			[PODCAST_SPEAKERS.hostB]: "onyx",
+		};
+	}
+
+	return {
+		[NEWS_BROADCAST_SPEAKERS.anchor]: "onyx",
+	};
 };

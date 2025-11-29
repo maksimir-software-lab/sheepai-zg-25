@@ -1,8 +1,8 @@
 export const PODCAST_CONFIG = {
 	defaultModel: "tts-1",
-	defaultFormat: "mp3",
+	defaultFormat: "wav",
 	defaultSpeed: 1.0,
-	maxTextLength: 4096,
+	maxTextLength: 4_096,
 } as const;
 
 export type PodcastConfig = {

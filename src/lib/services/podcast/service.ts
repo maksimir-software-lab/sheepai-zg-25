@@ -1,13 +1,17 @@
 import type { PodcastDeps } from "./deps";
 import {
 	concatenateAudioBuffers,
+	generateScriptFromArticles,
 	generateSegmentAudio,
 	generateUniqueFilename,
+	getVoiceMappingForFormat,
 } from "./internal";
 import {
 	type AudioFormat,
+	type GenerateFromArticlesParams,
 	type GeneratePodcastParams,
 	type GeneratePodcastResponse,
+	generateFromArticlesParamsSchema,
 	generatePodcastParamsSchema,
 	type TtsModel,
 } from "./types";
@@ -17,7 +21,7 @@ export type IPodcastService = {
 };
 
 export const createPodcastService = (deps: PodcastDeps): IPodcastService => {
-	const { openai, storageService, config } = deps;
+	const { openai, storageService, llmService, articleService, config } = deps;
 
 	const generate = async (
 		params: GeneratePodcastParams,
@@ -31,6 +35,7 @@ export const createPodcastService = (deps: PodcastDeps): IPodcastService => {
 
 		const audioPromises = validatedParams.segments.map((segment, index) => {
 			const voice = validatedParams.voiceMapping[segment.speaker];
+
 			if (!voice) {
 				throw new Error(
 					`No voice mapping found for speaker: ${segment.speaker}`,
@@ -69,7 +74,38 @@ export const createPodcastService = (deps: PodcastDeps): IPodcastService => {
 		};
 	};
 
+	const generateFromArticles = async (
+		params: GenerateFromArticlesParams,
+	): Promise<GeneratePodcastResponse> => {
+		const validatedParams = generateFromArticlesParamsSchema.parse(params);
+
+		const articlesData = await articleService.getForPodcast(
+			validatedParams.articleIds,
+		);
+
+		if (articlesData.length === 0) {
+			throw new Error("No articles found for the provided IDs");
+		}
+
+		const segments = await generateScriptFromArticles(
+			llmService,
+			articlesData,
+			validatedParams.format,
+		);
+
+		const voiceMapping = getVoiceMappingForFormat(validatedParams.format);
+
+		return generate({
+			segments,
+			voiceMapping,
+			outputFormat: validatedParams.outputFormat,
+			speed: validatedParams.speed,
+			model: validatedParams.model,
+		});
+	};
+
 	return {
 		generate,
+		generateFromArticles,
 	};
 };
