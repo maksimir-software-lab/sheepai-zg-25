@@ -35,4 +35,3 @@ export type SimilarityProvider = {
 		options?: SimilarityOptions,
 	) => Promise<UserProfileSimilarityResult[]>;
 };
-

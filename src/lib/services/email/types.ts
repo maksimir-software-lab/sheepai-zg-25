@@ -86,3 +86,7 @@ export type InfobipDestination = z.infer<typeof infobipDestinationSchema>;
 export type InfobipMessage = z.infer<typeof infobipMessageSchema>;
 export type InfobipRequestBody = z.infer<typeof infobipRequestBodySchema>;
 export type InfobipResponse = z.infer<typeof infobipResponseSchema>;
+
+export type IEmailService = {
+	send: (request: SendEmailRequest) => Promise<InfobipResponse>;
+};

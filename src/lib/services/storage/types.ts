@@ -25,3 +25,16 @@ export type AddResponse = z.infer<typeof addResponseSchema>;
 export type GetResponse = z.infer<typeof getResponseSchema>;
 export type UpdateResponse = z.infer<typeof updateResponseSchema>;
 export type DeleteResponse = z.infer<typeof deleteResponseSchema>;
+
+type BucketOperations = {
+	add: (path: string, file: File | Blob) => Promise<AddResponse>;
+	get: (path: string) => GetResponse;
+	update: (path: string, file: File | Blob) => Promise<UpdateResponse>;
+	delete: (path: string) => Promise<DeleteResponse>;
+};
+
+export type IStorageService = {
+	file: BucketOperations;
+	image: BucketOperations;
+	audio: BucketOperations;
+};
