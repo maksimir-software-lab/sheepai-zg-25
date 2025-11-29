@@ -11,6 +11,7 @@ export const createEmbeddingService = (
 		const response = await openRouter.embeddings.generate({
 			model: embeddingConfig.model,
 			input: text,
+			dimensions: embeddingConfig.dimensions,
 			encodingFormat: "float",
 		});
 
@@ -22,6 +23,7 @@ export const createEmbeddingService = (
 		const response = await openRouter.embeddings.generate({
 			model: embeddingConfig.model,
 			input: texts,
+			dimensions: embeddingConfig.dimensions,
 			encodingFormat: "float",
 		});
 

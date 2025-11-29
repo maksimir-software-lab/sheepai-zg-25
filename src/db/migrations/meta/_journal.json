@@ -5,29 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1763331460109,
-      "tag": "0000_burly_meteorite",
+      "when": 1764423629674,
+      "tag": "0000_vector-extension",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1764415816822,
-      "tag": "0001_vector-extenion",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1764415835488,
-      "tag": "0002_pretty_dark_phoenix",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1764417123467,
-      "tag": "0003_light_storm",
+      "when": 1764423645582,
+      "tag": "0001_amusing_sprite",
       "breakpoints": true
     }
   ]
