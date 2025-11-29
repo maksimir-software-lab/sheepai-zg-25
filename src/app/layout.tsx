@@ -24,7 +24,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	const content = (
-		<html lang="en" className="dark">
+		<html lang="en" className="light">
 			<body
 				className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}
 			>

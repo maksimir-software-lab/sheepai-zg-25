@@ -5,9 +5,18 @@ alwaysApply: true
 # Project rules
 
 - Use bun as package manager and for commands
-- Type all components with React.FC
-- Components props must, unless exported, always be called 'Props'
+- Prefer arrow functions over function declarations
+
+## Frontend
+
+- Use Tailwind CSS for styling
+- Use Shadcn UI for components
+- Use Next.js for routing
+- Use React for the frontend
+- Use TypeScript for the frontend
+- Use React.FC for components
 - When installing shadcn components, do NOT override existing ones
 - Never hardcode any text in components, use the translations file instead
+- Components props must, unless exported, always be called 'Props'
 - Always declare a const 't' for the useTranslations hook and dont give other names
-- Prefer arrow functions over function declarations
+- All frontend code must be mobile responsive, mobile is the primary format
